@@ -2,10 +2,10 @@
 
 1. Setting up Dependencies
 
-   ```java
+   ```gradle
    dependencies {
-       implementation platform("com.google.cloud:spring-cloud-gcp-dependencies:3.3.0")
-           implementation("com.google.cloud:spring-cloud-gcp-starter-sql-mysql")
+        implementation platform("com.google.cloud:spring-cloud-gcp-dependencies:3.3.0")
+        implementation("com.google.cloud:spring-cloud-gcp-starter-sql-mysql")
    }
    ```
 
