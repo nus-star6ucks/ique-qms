@@ -1,25 +1,4 @@
 spring:
   application:
     name: ique-qms
-  cloud:
-    gcp:
-      project-id: ique-star6ucks
-      sql:
-        instance-connection-name: ique-star6ucks:asia-southeast1:iqueue
-        database-name: ique
-      credentials:
-        location: file:/secrets/credentials.json
-  datasource:
-    url: jdbc:postgresql://ique
-    username: ${DB_USER}
-    password: ${DB_PASS}
-    initialization-mode: always
-  jpa:
-    properties:
-      hibernate:
-        # The SQL dialect makes Hibernate generate better SQL for the chosen database
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      # Hibernate ddl auto (create, create-drop, validate, update)
-      ddl-auto: update
-    show-sql: true
+
