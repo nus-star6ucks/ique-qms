@@ -16,18 +16,6 @@ import java.util.List;
 @RequestMapping("/queues")
 public class QueueManagementController {
 
-//    @Autowired private QueueManagementService queueManagementService;
-
-    @PostMapping("/tickets")
-    public ResponseEntity<Object> createQueueTickets(@RequestBody Long queueId){
-        return null;
-    }
-
-//    @GetMapping("/tickets")
-//    public ResponseEntity<List<QueueTicket>> getQueueTickets(){
-//        return null;
-//    }
-
     @GetMapping("/{queueId}")
     public ResponseEntity<QueueInfo> getQueueInfo(@PathVariable Long queueId){
         QueueInfo queueInfo = new QueueInfo();
@@ -36,10 +24,5 @@ public class QueueManagementController {
         queueInfo.setWaitingSize(3);
         queueInfo.setSeatTypeName("hh");
         return new ResponseEntity<>(queueInfo, HttpStatus.OK);
-    }
-
-    @PostMapping("/queue/checkin")
-    public ResponseEntity<Object> checkinForCustomer(@RequestBody String queueId){
-        return null;
     }
 }
