@@ -1,5 +1,16 @@
 spring:
   application:
     name: ique-qms
-
+  cloud:
+    gcp:
+      sql:
+        enable: true
+        database-name: connection_test
+        instance-connection-name: ique-star6ucks:asia-southeast1:queue-db
+      project-id: ique-star6ucks
+      credentials:
+        location: file:_key.json
+  datasource:
+    username: queue-manager
+    password: rTJBMdkj6LrCSf0+
 
