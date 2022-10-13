@@ -2,9 +2,9 @@ name: Build and Deploy to GKE
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "xz-test" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "xz-test" ]
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
