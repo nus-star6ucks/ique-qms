@@ -1,7 +1,6 @@
 package com.mtech.ique.queueservice.service.impl;
 
 import com.mtech.ique.queueservice.model.entity.*;
-//import com.mtech.ique.queueservice.repository.QueueInfoRepository;
 import com.mtech.ique.queueservice.repository.QueueTicketRepository;
 import com.mtech.ique.queueservice.service.QueueManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,13 @@ public class QueueManagementImpl implements QueueManagementService {
                 QueueTicket queueTicket = initiateTicket();
                 queueTicket.setQueueNumber(queue.getQueueTickets().size());
                 queueTicket.setSeatType(queue.getSeatType());
+                //insert queueTicket into sql
+                queueTicketRepository.save(queueTicket);
+                //update queue information
                 queue.getQueueTickets().add(queueTicket);
+                queue.setWaitingSize(queue.getWaitingSize() + 1);
+                queue.setEstimateWaitingTime(queue.getWaitingSize() * 5);
+                //format return
                 hashMap.put("ticketId", queueTicket.getTicketId());
                 hashMap.put("queueNumber", queueTicket.getQueueNumber());
                 hashMap.put("seatTypeName", queueTicket.getSeatType().getName());
@@ -60,7 +65,7 @@ public class QueueManagementImpl implements QueueManagementService {
     }
 
     @Override
-    public HashMap<String, Object> getQueueInfo(Long ticketId) {
+    public HashMap<String, Object> getQueueTicketDetail(Long ticketId) {
         HashMap<String, Object> queueInfo = new HashMap<>();
         for (QueueList queue : queueList) {
             for (QueueTicket queueTicket : queue.getQueueTickets()) {
@@ -87,6 +92,8 @@ public class QueueManagementImpl implements QueueManagementService {
             for (QueueTicket queueTicket : queue.getQueueTickets()) {
                 if(queueTicket.getTicketId() == ticketId){
                     queue.getQueueTickets().poll();
+                    queue.setWaitingSize(queue.getWaitingSize() - 1);
+                    queue.setEstimateWaitingTime(queue.getWaitingSize() * 5);
                     return true;
                 }
             }
@@ -131,6 +138,22 @@ public class QueueManagementImpl implements QueueManagementService {
                 }
             }
         }
+    }
+
+    @Override
+    public QueueInfo getQueueInfoDetail(Long queueId) {
+        QueueInfo queueInfo = new QueueInfo();
+        queueInfo.setQueueId(0);
+        for (QueueList queue : queueList) {
+            if (queue.getQueueId() == queueId){
+                queueInfo.setQueueId(queueId);
+                queueInfo.setSeatTypeName(queue.getSeatType().getName());
+                queueInfo.setEstimateWaitingTime(queue.getEstimateWaitingTime());
+                queueInfo.setWaitingSize(queue.getWaitingSize());
+                return queueInfo;
+            }
+        }
+        return queueInfo;
     }
 
 }

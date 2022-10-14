@@ -47,7 +47,7 @@ public class QueueManagementController {
 
     @GetMapping("/queues/tickets/{ticketId}")
     public ResponseEntity<Object> getQueueTicketDetail(@PathVariable Long ticketId){
-        HashMap<String, Object> hashMap = queueManagementService.getQueueInfo(ticketId);
+        HashMap<String, Object> hashMap = queueManagementService.getQueueTicketDetail(ticketId);
         if (hashMap.isEmpty()){
             return new ResponseEntity<>("Record not found", HttpStatus.NOT_FOUND);
         }
@@ -55,18 +55,18 @@ public class QueueManagementController {
     }
 
     @GetMapping("/queues/{queueId}")
-    public ResponseEntity<QueueInfo> getQueueInfo(@PathVariable Long queueId){
-        QueueInfo queueInfo = new QueueInfo();
-        queueInfo.setQueueId(queueId);
-        queueInfo.setEstimateWaitingTime(2);
-        queueInfo.setWaitingSize(3);
-        queueInfo.setSeatTypeName("hh");
+    public ResponseEntity<Object> getQueueInfoDetail(@PathVariable Long queueId){
+        QueueInfo queueInfo = queueManagementService.getQueueInfoDetail(queueId);
+        if (queueInfo.getQueueId() == 0){
+            return new ResponseEntity<>("Recode not found", HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>(queueInfo, HttpStatus.OK);
     }
 
     @PostMapping("/queues/checkin")
     public ResponseEntity<Object> checkinForCustomer(@RequestBody Long queueId){
-
-        return null;
+        if (queueManagementService.checkIn(queueId))
+            return new ResponseEntity<>("Success", HttpStatus.OK);
+        return new ResponseEntity<>("error", HttpStatus.UNAUTHORIZED);
     }
 }
