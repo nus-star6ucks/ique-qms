@@ -14,7 +14,7 @@ public interface QueueManagementService {
 
     List<QueueTicket> getTickets();
 
-    HashMap<String, Object> getQueueInfo(Long ticketId);
+    HashMap<String, Object> getQueueTicketDetail(Long ticketId);
 
     boolean checkIn(Long ticketId);
 
@@ -23,4 +23,8 @@ public interface QueueManagementService {
     List<HashMap<String, Object>> createQueues(List<HashMap<String, Object>> seatTypeList);
 
     void deleteQueues(List<Long> queueIdList);
+
+    QueueInfo getQueueInfoDetail(Long queueId);
+
+
 }
