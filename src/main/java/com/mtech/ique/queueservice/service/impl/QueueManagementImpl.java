@@ -1,6 +1,7 @@
 package com.mtech.ique.queueservice.service.impl;
 
 import com.mtech.ique.queueservice.model.entity.*;
+import com.mtech.ique.queueservice.model.enums.TicketStatus;
 import com.mtech.ique.queueservice.repository.QueueTicketRepository;
 import com.mtech.ique.queueservice.service.QueueManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class QueueManagementImpl implements QueueManagementService {
         for (QueueList queue: queueList) {
             if (queue.getQueueId() == queueId){
                 QueueTicket queueTicket = initiateTicket();
-                queueTicket.setQueueNumber(queue.getQueueTickets().size());
+                queueTicket.setQueueNumber(queue.getQueueNumber() + 1);
                 queueTicket.setSeatType(queue.getSeatType());
                 //insert queueTicket into sql
 //                queueTicketRepository.save(queueTicket);
@@ -31,13 +32,14 @@ public class QueueManagementImpl implements QueueManagementService {
                 queue.getQueueTickets().add(queueTicket);
                 queue.setWaitingSize(queue.getWaitingSize() + 1);
                 queue.setEstimateWaitingTime(queue.getWaitingSize() * 5);
+                queue.setQueueNumber(queue.getQueueNumber() + 1);
                 //format return
                 hashMap.put("ticketId", queueTicket.getTicketId());
                 hashMap.put("queueNumber", queueTicket.getQueueNumber());
                 hashMap.put("seatTypeName", queueTicket.getSeatType().getName());
-                System.out.print(hashMap.get("ticketId"));
-                System.out.print(hashMap.get("queueNumber"));
-                System.out.print(hashMap.get("seatTypeName"));
+                hashMap.put("waitingSize", queue.getWaitingSize());
+                hashMap.put("estimateWaitingTime", queue.getEstimateWaitingTime());
+                System.out.print(queueTicket.getQueueNumber());
                 return hashMap;
             }
         }
@@ -98,6 +100,11 @@ public class QueueManagementImpl implements QueueManagementService {
                     queue.getQueueTickets().poll();
                     queue.setWaitingSize(queue.getWaitingSize() - 1);
                     queue.setEstimateWaitingTime(queue.getWaitingSize() * 5);
+                    queueTicket.setStatus(TicketStatus.SEATED);
+                    Date date = new Date();
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd-hh-mm-ss");
+                    String endTime = dateFormat.format(date);
+                    queueTicket.setEndTime(endTime);
                     return true;
                 }
             }

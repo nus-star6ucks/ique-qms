@@ -15,12 +15,13 @@ public class QueueList {
     private long estimateWaitingTime;
     private SeatType seatType;
     private long waitingSize;
-
+    private long queueNumber;
     public QueueList() {
         queueId = 0;
         queueTickets = new LinkedList<QueueTicket>();
         estimateWaitingTime = 0;
         seatType = new SeatType();
         waitingSize = 0;
+        queueNumber = 0;
     }
 }

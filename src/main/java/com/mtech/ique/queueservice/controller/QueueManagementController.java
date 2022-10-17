@@ -21,7 +21,7 @@ public class QueueManagementController {
 
     @Autowired private QueueManagementService queueManagementService;
 
-    @PostMapping("/tickets")
+    @PostMapping("/queues/tickets")
     public ResponseEntity createQueueTickets(@RequestParam Long queueId){
         HashMap<String, Object> hashmap = queueManagementService.createTicket(queueId);
         if (hashmap.isEmpty())
@@ -35,7 +35,7 @@ public class QueueManagementController {
     }
 
     @PostMapping("/queues/stop")
-    public ResponseEntity<Object> deleteQueues(@RequestBody List<Long> queueIdList){
+    public ResponseEntity deleteQueues(@RequestBody List<Long> queueIdList){
         queueManagementService.deleteQueues(queueIdList);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -73,8 +73,8 @@ public class QueueManagementController {
     }
 
     @PostMapping("/queues/checkin")
-    public ResponseEntity<Object> checkinForCustomer(@RequestParam Long queueId){
-        if (queueManagementService.checkIn(queueId))
+    public ResponseEntity checkinForCustomer(@RequestParam Long ticketId){
+        if (queueManagementService.checkIn(ticketId))
             return new ResponseEntity<>("Success", HttpStatus.OK);
         return new ResponseEntity<>("error", HttpStatus.UNAUTHORIZED);
     }
