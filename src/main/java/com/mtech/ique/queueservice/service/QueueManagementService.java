@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface QueueManagementService {
 
-    HashMap<String, Object> createTicket(Long queueId);
+    HashMap<String, Object> createTicket(Long queueId, Long customerId);
 
     HashMap<String, Object> getQueueTicketDetail(Long ticketId);
 
