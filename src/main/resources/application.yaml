@@ -1,3 +1,6 @@
+server:
+  port: 8083
+
 spring:
   application:
     name: ique-qms
@@ -13,4 +16,3 @@ spring:
   datasource:
     username: queue-manager
     password: rTJBMdkj6LrCSf0+
-
