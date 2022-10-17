@@ -22,7 +22,7 @@ public class QueueManagementController {
     @Autowired private QueueManagementService queueManagementService;
 
     @PostMapping("/tickets")
-    public ResponseEntity<Object> createQueueTickets(@RequestBody Long queueId){
+    public ResponseEntity createQueueTickets(@RequestParam Long queueId){
         HashMap<String, Object> hashmap = queueManagementService.createTicket(queueId);
         if (hashmap.isEmpty())
             return new ResponseEntity<>("Fail to find queue", HttpStatus.CONFLICT);
@@ -30,7 +30,7 @@ public class QueueManagementController {
     }
 
     @PostMapping("/queues/start")
-    public ResponseEntity<Object> createQueues(@RequestBody List<HashMap<String, Object>> seatTypeList){
+    public ResponseEntity createQueues(@RequestBody List<HashMap<String, Object>> seatTypeList){
         return new ResponseEntity<>(queueManagementService.createQueues(seatTypeList), HttpStatus.CREATED);
     }
 
@@ -41,8 +41,17 @@ public class QueueManagementController {
     }
 
     @GetMapping("/queues/tickets")
-    public ResponseEntity<List<QueueTicket>> getQueueTickets(@RequestBody Long storeId, Long userId){
-        return null;
+    public ResponseEntity getQueueTickets(@RequestParam("userId") Long userId, @RequestParam("storeId") Long storeId){
+        if (userId == null && storeId != null){
+            return new ResponseEntity<>(queueManagementService.getQueueTicketsByUser(userId), HttpStatus.OK);
+        }
+        if (userId != null && storeId == null){
+            return new ResponseEntity<>(queueManagementService.getQueueTicketsByStore(storeId), HttpStatus.OK);
+        }
+        if (userId != null && storeId != null){
+            return new ResponseEntity<>(queueManagementService.getQueueTicketsByUserAndStore(userId, storeId), HttpStatus.OK);
+        }
+        return new ResponseEntity<>("error", HttpStatus.UNAUTHORIZED);
     }
 
     @GetMapping("/queues/tickets/{ticketId}")
@@ -64,7 +73,7 @@ public class QueueManagementController {
     }
 
     @PostMapping("/queues/checkin")
-    public ResponseEntity<Object> checkinForCustomer(@RequestBody Long queueId){
+    public ResponseEntity<Object> checkinForCustomer(@RequestParam Long queueId){
         if (queueManagementService.checkIn(queueId))
             return new ResponseEntity<>("Success", HttpStatus.OK);
         return new ResponseEntity<>("error", HttpStatus.UNAUTHORIZED);

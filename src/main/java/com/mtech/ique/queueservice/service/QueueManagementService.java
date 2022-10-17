@@ -26,5 +26,9 @@ public interface QueueManagementService {
 
     QueueInfo getQueueInfoDetail(Long queueId);
 
+    List<QueueTicket> getQueueTicketsByUser(Long userId);
 
+    List<QueueTicket> getQueueTicketsByStore(Long storeId);
+
+    List<QueueTicket> getQueueTicketsByUserAndStore(Long userId, Long storeId);
 }
