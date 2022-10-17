@@ -11,6 +11,7 @@ import java.util.*;
 
 @Service
 public class QueueManagementImpl implements QueueManagementService {
+
   @Autowired private QueueTicketRepository queueTicketRepository;
   private ArrayList<QueueList> queueList = new ArrayList<>();
   private HashMap<Long, LinkedList<QueueTicket>> queueTicketsMap =
@@ -42,9 +43,13 @@ public class QueueManagementImpl implements QueueManagementService {
         hashMap.put("ticketId", queueTicket.getTicketId());
         hashMap.put("queueNumber", queueTicket.getQueueNumber());
         hashMap.put("seatTypeName", queueTicket.getSeatType().getName());
+        hashMap.put("waitingSize", queue.getWaitingSize());
+        hashMap.put("estimateWaitingTime", queue.getEstimateWaitingTime());
+        
         System.out.print(hashMap.get("ticketId"));
         System.out.print(hashMap.get("queueNumber"));
         System.out.print(hashMap.get("seatTypeName"));
+        
         return hashMap;
       }
     }
@@ -96,9 +101,11 @@ public class QueueManagementImpl implements QueueManagementService {
                   queueTicket.getSeatType().getName());
           queueInfo.put("queueInfo", tempQueueInfo);
           return queueInfo;
+
         }
       }
     }
+
     return queueInfo;
   }
 
@@ -111,6 +118,7 @@ public class QueueManagementImpl implements QueueManagementService {
           queue.setWaitingSize(queue.getWaitingSize() - 1);
           queue.setEstimateWaitingTime(queue.getWaitingSize() * 5);
           return true;
+
         }
       }
     }
@@ -152,6 +160,7 @@ public class QueueManagementImpl implements QueueManagementService {
         }
       }
     }
+
   }
 
   @Override
@@ -164,9 +173,11 @@ public class QueueManagementImpl implements QueueManagementService {
         queueInfo.setSeatTypeName(queue.getSeatType().getName());
         queueInfo.setEstimateWaitingTime(queue.getEstimateWaitingTime());
         queueInfo.setWaitingSize(queue.getWaitingSize());
+
         return queueInfo;
       }
     }
+
     return queueInfo;
   }
 
@@ -191,4 +202,5 @@ public class QueueManagementImpl implements QueueManagementService {
     }
     return queueTickets;
   }
+
 }

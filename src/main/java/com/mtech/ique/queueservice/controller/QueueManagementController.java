@@ -18,6 +18,7 @@ public class QueueManagementController {
 
     @Autowired private QueueManagementService queueManagementService;
 
+
     @PostMapping("/tickets")
     public ResponseEntity createQueueTickets(@RequestParam Long queueId, Long customerId){
         HashMap<String, Object> hashmap = queueManagementService.createTicket(queueId, customerId);
@@ -30,6 +31,7 @@ public class QueueManagementController {
     public ResponseEntity createQueues(@RequestBody List<HashMap<String, Object>> seatTypeList){
         return new ResponseEntity<>(queueManagementService.createQueues(seatTypeList), HttpStatus.CREATED);
     }
+
 
     @PostMapping("/stop")
     public ResponseEntity<Object> deleteQueues(@RequestBody List<Long> queueIdList){
