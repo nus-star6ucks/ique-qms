@@ -9,10 +9,8 @@ import javax.persistence.Embeddable;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Embeddable
 public class SeatType {
-    private long id;
-    private String name;
+  private Long id;
+  private String name;
 }

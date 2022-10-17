@@ -1,9 +1,6 @@
 package com.mtech.ique.queueservice.controller;
 
 import com.mtech.ique.queueservice.model.entity.QueueInfo;
-import com.mtech.ique.queueservice.model.entity.QueueTicket;
-import com.mtech.ique.queueservice.service.QueueManagementService;
-import com.mtech.ique.queueservice.model.entity.QueueTicket;
 import com.mtech.ique.queueservice.service.QueueManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,31 +13,31 @@ import java.util.List;
 
 @CrossOrigin
 @Controller
-//@RequestMapping("/queues")
+@RequestMapping("/queues")
 public class QueueManagementController {
 
     @Autowired private QueueManagementService queueManagementService;
 
     @PostMapping("/tickets")
-    public ResponseEntity createQueueTickets(@RequestParam Long queueId){
-        HashMap<String, Object> hashmap = queueManagementService.createTicket(queueId);
+    public ResponseEntity createQueueTickets(@RequestParam Long queueId, Long customerId){
+        HashMap<String, Object> hashmap = queueManagementService.createTicket(queueId, customerId);
         if (hashmap.isEmpty())
             return new ResponseEntity<>("Fail to find queue", HttpStatus.CONFLICT);
         return new ResponseEntity<>(hashmap, HttpStatus.CREATED);
     }
 
-    @PostMapping("/queues/start")
+    @PostMapping("/start")
     public ResponseEntity createQueues(@RequestBody List<HashMap<String, Object>> seatTypeList){
         return new ResponseEntity<>(queueManagementService.createQueues(seatTypeList), HttpStatus.CREATED);
     }
 
-    @PostMapping("/queues/stop")
+    @PostMapping("/stop")
     public ResponseEntity<Object> deleteQueues(@RequestBody List<Long> queueIdList){
         queueManagementService.deleteQueues(queueIdList);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/queues/tickets")
+    @GetMapping("/tickets")
     public ResponseEntity getQueueTickets(@RequestParam("userId") Long userId, @RequestParam("storeId") Long storeId){
         if (userId == null && storeId != null){
             return new ResponseEntity<>(queueManagementService.getQueueTicketsByUser(userId), HttpStatus.OK);
@@ -54,7 +51,7 @@ public class QueueManagementController {
         return new ResponseEntity<>("error", HttpStatus.UNAUTHORIZED);
     }
 
-    @GetMapping("/queues/tickets/{ticketId}")
+    @GetMapping("/tickets/{ticketId}")
     public ResponseEntity<Object> getQueueTicketDetail(@PathVariable Long ticketId){
         HashMap<String, Object> hashMap = queueManagementService.getQueueTicketDetail(ticketId);
         if (hashMap.isEmpty()){
@@ -63,7 +60,7 @@ public class QueueManagementController {
         return new ResponseEntity<>(hashMap, HttpStatus.OK);
     }
 
-    @GetMapping("/queues/{queueId}")
+    @GetMapping("/{queueId}")
     public ResponseEntity<Object> getQueueInfoDetail(@PathVariable Long queueId){
         QueueInfo queueInfo = queueManagementService.getQueueInfoDetail(queueId);
         if (queueInfo.getQueueId() == 0){
@@ -72,7 +69,7 @@ public class QueueManagementController {
         return new ResponseEntity<>(queueInfo, HttpStatus.OK);
     }
 
-    @PostMapping("/queues/checkin")
+    @PostMapping("/checkin")
     public ResponseEntity<Object> checkinForCustomer(@RequestParam Long queueId){
         if (queueManagementService.checkIn(queueId))
             return new ResponseEntity<>("Success", HttpStatus.OK);
