@@ -1,6 +1,7 @@
 package com.mtech.ique.queueservice.model.enums;
 
 public enum TicketStatus {
+
   WAITING("waiting"),
   SKIPPED("skipped"),
   SEATED("seated");

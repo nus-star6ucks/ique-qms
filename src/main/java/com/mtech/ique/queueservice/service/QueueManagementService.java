@@ -11,8 +11,6 @@ public interface QueueManagementService {
 
     HashMap<String, Object> createTicket(Long queueId, Long customerId);
 
-    List<QueueTicket> getTickets();
-
     HashMap<String, Object> getQueueTicketDetail(Long ticketId);
 
     boolean checkIn(Long ticketId);
