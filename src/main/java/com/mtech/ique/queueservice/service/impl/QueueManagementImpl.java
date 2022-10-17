@@ -19,13 +19,14 @@ public class QueueManagementImpl implements QueueManagementService {
     @Override
     public HashMap<String, Object> createTicket(Long queueId){
         HashMap<String, Object> hashMap = new HashMap<>();
+        System.out.println(queueList.size());
         for (QueueList queue: queueList) {
             if (queue.getQueueId() == queueId){
                 QueueTicket queueTicket = initiateTicket();
                 queueTicket.setQueueNumber(queue.getQueueTickets().size());
                 queueTicket.setSeatType(queue.getSeatType());
                 //insert queueTicket into sql
-                queueTicketRepository.save(queueTicket);
+//                queueTicketRepository.save(queueTicket);
                 //update queue information
                 queue.getQueueTickets().add(queueTicket);
                 queue.setWaitingSize(queue.getWaitingSize() + 1);
@@ -34,6 +35,9 @@ public class QueueManagementImpl implements QueueManagementService {
                 hashMap.put("ticketId", queueTicket.getTicketId());
                 hashMap.put("queueNumber", queueTicket.getQueueNumber());
                 hashMap.put("seatTypeName", queueTicket.getSeatType().getName());
+                System.out.print(hashMap.get("ticketId"));
+                System.out.print(hashMap.get("queueNumber"));
+                System.out.print(hashMap.get("seatTypeName"));
                 return hashMap;
             }
         }
@@ -43,7 +47,7 @@ public class QueueManagementImpl implements QueueManagementService {
     private QueueTicket initiateTicket(){
         //初始化ticketId
         UUID uuid = UUID.randomUUID();
-        long ticketId = uuid.toString().replace("-", "").hashCode();
+        long ticketId = Math.abs(uuid.toString().replace("-", "").hashCode()) % 10000;
         QueueTicket queueTicket = new QueueTicket();
         queueTicket.setTicketId(ticketId);
         //初始化时间
@@ -109,10 +113,10 @@ public class QueueManagementImpl implements QueueManagementService {
     @Override
     public List<HashMap<String, Object>> createQueues(List<HashMap<String, Object>> seatTypeList) {
 
-        List<HashMap<String, Object>> hashMapList = null;
+        List<HashMap<String, Object>> hashMapList = new ArrayList<>();
         for (HashMap<String, Object> hashMapMap: seatTypeList) {
             QueueList queue = new QueueList();
-            long queueId = UUID.randomUUID().toString().replace("-", "").hashCode();
+            long queueId = Math.abs(UUID.randomUUID().toString().replace("-", "").hashCode()) % 10000;
             queue.setQueueId(queueId);
             SeatType seatType = new SeatType();
             long seatTypeId = Long.valueOf(String.valueOf(hashMapMap.get("id")));
@@ -154,6 +158,28 @@ public class QueueManagementImpl implements QueueManagementService {
             }
         }
         return queueInfo;
+    }
+
+    @Override
+    public List<QueueTicket> getQueueTicketsByUser(Long userId) {
+        return queueTicketRepository.findAllByCustomerId(userId);
+    }
+
+    @Override
+    public List<QueueTicket> getQueueTicketsByStore(Long storeId) {
+        return queueTicketRepository.findAllByStoreId(storeId);
+    }
+
+    @Override
+    public List<QueueTicket> getQueueTicketsByUserAndStore(Long userId, Long storeId) {
+        List<QueueTicket> queueTicketsByUser = queueTicketRepository.findAllByCustomerId(userId);
+        List<QueueTicket> queueTickets = new ArrayList<>();
+        for (QueueTicket queueTicket : queueTicketsByUser) {
+            if (queueTicket.getStoreId() == storeId){
+                queueTickets.add(queueTicket);
+            }
+        }
+        return queueTickets;
     }
 
 }

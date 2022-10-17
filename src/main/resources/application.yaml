@@ -5,7 +5,7 @@ spring:
     gcp:
       sql:
         enable: true
-        database-name: connection_test
+        database-name: qms
         instance-connection-name: ique-star6ucks:asia-southeast1:queue-db
       project-id: ique-star6ucks
       credentials:
