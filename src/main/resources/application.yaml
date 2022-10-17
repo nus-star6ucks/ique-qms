@@ -7,12 +7,24 @@ spring:
   cloud:
     gcp:
       sql:
-        enable: true
         database-name: qms
         instance-connection-name: ique-star6ucks:asia-southeast1:queue-db
       project-id: ique-star6ucks
       credentials:
         location: file:_key.json
   datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${MYSQL_URL:jdbc:mysql://localhost/queues-db?createDatabaseIfNotExist=true}
     username: queue-manager
+
     password: rTJBMdkj6LrCSf0+
+    initialization-mode: always
+  jpa:
+    properties:
+      hibernate:
+        # The SQL dialect makes Hibernate generate better SQL for the chosen database
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      # Hibernate ddl auto (create, create-drop, validate, update)
+      ddl-auto: update
+    show-sql: true
