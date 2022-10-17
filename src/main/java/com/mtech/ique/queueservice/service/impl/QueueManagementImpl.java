@@ -62,15 +62,6 @@ public class QueueManagementImpl implements QueueManagementService {
     }
 
     @Override
-    public List<QueueTicket> getTickets() {
-        List<QueueTicket> ticketList = null;
-        for (LinkedList linkedList: queueTicketsMap.values()) {
-            ticketList.addAll(linkedList);
-        }
-        return ticketList;
-    }
-
-    @Override
     public HashMap<String, Object> getQueueTicketDetail(Long ticketId) {
         HashMap<String, Object> queueInfo = new HashMap<>();
         for (QueueList queue : queueList) {
@@ -105,6 +96,8 @@ public class QueueManagementImpl implements QueueManagementService {
                     DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd-hh-mm-ss");
                     String endTime = dateFormat.format(date);
                     queueTicket.setEndTime(endTime);
+                    //update database
+                    queueTicketRepository.save(queueTicket);
                     return true;
                 }
             }
@@ -141,14 +134,16 @@ public class QueueManagementImpl implements QueueManagementService {
 
     @Override
     public void deleteQueues(List<Long> queueIdList) {
+        QueueList queueListTemp = new QueueList();
         for (long queueId : queueIdList) {
             for (QueueList queue : queueList) {
                 if (queue.getQueueId() == queueId) {
-                    queueList.remove(queue);
+                    queueListTemp = queue;
                     break;
                 }
             }
         }
+        queueList.remove(queueListTemp);
     }
 
     @Override
@@ -169,12 +164,26 @@ public class QueueManagementImpl implements QueueManagementService {
 
     @Override
     public List<QueueTicket> getQueueTicketsByUser(Long userId) {
-        return queueTicketRepository.findAllByCustomerId(userId);
+        List<QueueTicket> queueTickets = queueTicketRepository.findAllByCustomerId(userId);
+        List<QueueTicket> queueTicketsFinal = new ArrayList<>();
+        for (QueueTicket queueTicket: queueTickets) {
+            if (queueTicket.getStatus() == TicketStatus.PENDING){
+                queueTicketsFinal.add(queueTicket);
+            }
+        }
+        return queueTicketsFinal;
     }
 
     @Override
     public List<QueueTicket> getQueueTicketsByStore(Long storeId) {
-        return queueTicketRepository.findAllByStoreId(storeId);
+        List<QueueTicket> queueTickets = queueTicketRepository.findAllByStoreId(storeId);
+        List<QueueTicket> queueTicketsFinal = new ArrayList<>();
+        for (QueueTicket queueTicket: queueTickets) {
+            if (queueTicket.getStatus() == TicketStatus.PENDING){
+                queueTicketsFinal.add(queueTicket);
+            }
+        }
+        return queueTicketsFinal;
     }
 
     @Override
@@ -182,7 +191,7 @@ public class QueueManagementImpl implements QueueManagementService {
         List<QueueTicket> queueTicketsByUser = queueTicketRepository.findAllByCustomerId(userId);
         List<QueueTicket> queueTickets = new ArrayList<>();
         for (QueueTicket queueTicket : queueTicketsByUser) {
-            if (queueTicket.getStoreId() == storeId){
+            if (queueTicket.getStoreId() == storeId && queueTicket.getStatus() == TicketStatus.PENDING){
                 queueTickets.add(queueTicket);
             }
         }

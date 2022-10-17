@@ -29,6 +29,6 @@ public class QueueTicket {
     @Embedded
     private SeatType seatType;
 
-    private TicketStatus status = TicketStatus.WAITTING;
+    private TicketStatus status = TicketStatus.PENDING;
 
 }
