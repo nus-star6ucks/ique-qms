@@ -48,15 +48,15 @@ public class QueueManagementImpl implements QueueManagementService {
 
     private QueueTicket initiateTicket(){
         //初始化ticketId
-        UUID uuid = UUID.randomUUID();
-        long ticketId = Math.abs(uuid.toString().replace("-", "").hashCode()) % 10000;
+//        UUID uuid = UUID.randomUUID();
+//        long ticketId = Math.abs(uuid.toString().replace("-", "").hashCode()) % 10000;
         QueueTicket queueTicket = new QueueTicket();
-        queueTicket.setTicketId(ticketId);
-        //初始化时间
-        Date date = new Date();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd-hh-mm-ss");
-        String startTime = dateFormat.format(date);
-        queueTicket.setStartTime(startTime);
+//        queueTicket.setTicketId(ticketId);
+//        //初始化时间
+//        Date date = new Date();
+//        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd-hh-mm-ss");
+//        String startTime = dateFormat.format(date);
+//        queueTicket.setStartTime(startTime);
         //初始化searType
         return queueTicket;
     }
@@ -73,7 +73,7 @@ public class QueueManagementImpl implements QueueManagementService {
                     queueInfo.put("queueNumber", queueTicket.getQueueNumber());
                     queueInfo.put("startTime", queueTicket.getStartTime());
                     queueInfo.put("endTime", queueTicket.getEndTime());
-                    queueInfo.put("status", queueTicket.getStatus().name());
+                    queueInfo.put("status", queueTicket.getStatus());
                     QueueInfo tempQueueInfo = new QueueInfo(queue.getQueueId(), queue.getWaitingSize(), queue.getEstimateWaitingTime(), queueTicket.getSeatType().getName());
                     queueInfo.put("queueInfo", tempQueueInfo);
                     return queueInfo;
@@ -91,11 +91,11 @@ public class QueueManagementImpl implements QueueManagementService {
                     queue.getQueueTickets().poll();
                     queue.setWaitingSize(queue.getWaitingSize() - 1);
                     queue.setEstimateWaitingTime(queue.getWaitingSize() * 5);
-                    queueTicket.setStatus(TicketStatus.SEATED);
+                    queueTicket.setStatus(TicketStatus.SEATED.name());
                     Date date = new Date();
                     DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd-hh-mm-ss");
                     String endTime = dateFormat.format(date);
-                    queueTicket.setEndTime(endTime);
+//                    queueTicket.setEndTime(endTime);
                     //update database
                     queueTicketRepository.save(queueTicket);
                     return true;
@@ -167,7 +167,7 @@ public class QueueManagementImpl implements QueueManagementService {
         List<QueueTicket> queueTickets = queueTicketRepository.findAllByCustomerId(userId);
         List<QueueTicket> queueTicketsFinal = new ArrayList<>();
         for (QueueTicket queueTicket: queueTickets) {
-            if (queueTicket.getStatus() == TicketStatus.PENDING){
+            if (queueTicket.getStatus() == TicketStatus.PENDING.name()){
                 queueTicketsFinal.add(queueTicket);
             }
         }
@@ -179,7 +179,7 @@ public class QueueManagementImpl implements QueueManagementService {
         List<QueueTicket> queueTickets = queueTicketRepository.findAllByStoreId(storeId);
         List<QueueTicket> queueTicketsFinal = new ArrayList<>();
         for (QueueTicket queueTicket: queueTickets) {
-            if (queueTicket.getStatus() == TicketStatus.PENDING){
+            if (queueTicket.getStatus() == TicketStatus.PENDING.name()){
                 queueTicketsFinal.add(queueTicket);
             }
         }
@@ -191,7 +191,7 @@ public class QueueManagementImpl implements QueueManagementService {
         List<QueueTicket> queueTicketsByUser = queueTicketRepository.findAllByCustomerId(userId);
         List<QueueTicket> queueTickets = new ArrayList<>();
         for (QueueTicket queueTicket : queueTicketsByUser) {
-            if (queueTicket.getStoreId() == storeId && queueTicket.getStatus() == TicketStatus.PENDING){
+            if (queueTicket.getStoreId() == storeId && queueTicket.getStatus() == TicketStatus.PENDING.name()){
                 queueTickets.add(queueTicket);
             }
         }
