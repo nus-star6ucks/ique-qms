@@ -29,6 +29,8 @@ public class QueueManagementImpl implements QueueManagementService {
         queueTicket.setSeatType(queue.getSeatType());
         queueTicket.setCustomerId(customerId);
         queueTicket.setStoreId(storeId);
+        queueTicket.setQueueId(queueId);
+        queueTicket.setStatus(TicketStatus.PENDING.toString());
         // insert queueTicket into sql
         queueTicketRepository.save(queueTicket);
 
@@ -161,7 +163,7 @@ public class QueueManagementImpl implements QueueManagementService {
     List<QueueTicket> queueTickets = queueTicketRepository.findAllByCustomerId(userId);
     List<QueueTicket> queueTicketsFinal = new ArrayList<>();
     for (QueueTicket queueTicket : queueTickets) {
-      if (queueTicket.getStatus() == TicketStatus.PENDING.name()) {
+      if (queueTicket.getStatus() == TicketStatus.PENDING.toString()) {
         queueTicketsFinal.add(queueTicket);
       }
     }

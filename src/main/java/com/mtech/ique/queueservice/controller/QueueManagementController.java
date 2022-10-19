@@ -13,11 +13,12 @@ import java.util.List;
 
 @CrossOrigin
 @Controller
+@RequestMapping("/queues")
 public class QueueManagementController {
 
     @Autowired private QueueManagementService queueManagementService;
 
-    @PostMapping("/queues/tickets")
+    @PostMapping("/tickets")
     public ResponseEntity createQueueTickets(@RequestParam("queueId") Long queueId, @RequestParam("customerId") Long customerId, @RequestParam("storeId") Long storeId){
         HashMap<String, Object> hashmap = queueManagementService.createTicket(queueId, customerId, storeId);
         if (hashmap.isEmpty())
@@ -76,7 +77,7 @@ public class QueueManagementController {
         return new ResponseEntity<>("error", HttpStatus.UNAUTHORIZED);
     }
 
-    @PostMapping("/queues/skip")
+    @PostMapping("/skip")
     public ResponseEntity skipCustomer(@RequestParam Long ticketId){
         queueManagementService.skipCustomer(ticketId);
         return new ResponseEntity("skip customer", HttpStatus.OK);
