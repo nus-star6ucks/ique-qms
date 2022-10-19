@@ -161,7 +161,7 @@ public class QueueManagementImpl implements QueueManagementService {
     List<QueueTicket> queueTickets = queueTicketRepository.findAllByCustomerId(userId);
     List<QueueTicket> queueTicketsFinal = new ArrayList<>();
     for (QueueTicket queueTicket : queueTickets) {
-      if (queueTicket.getStatus() == TicketStatus.PENDING.name()) {
+      if (queueTicket.getStatus() == TicketStatus.PENDING.toString()) {
         queueTicketsFinal.add(queueTicket);
       }
     }
