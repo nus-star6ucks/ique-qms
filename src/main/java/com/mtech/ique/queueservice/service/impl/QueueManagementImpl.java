@@ -29,6 +29,8 @@ public class QueueManagementImpl implements QueueManagementService {
         queueTicket.setSeatType(queue.getSeatType());
         queueTicket.setCustomerId(customerId);
         queueTicket.setStoreId(storeId);
+        queueTicket.setQueueId(queueId);
+        queueTicket.setStatus(TicketStatus.PENDING.toString());
         // insert queueTicket into sql
         queueTicketRepository.save(queueTicket);
 
