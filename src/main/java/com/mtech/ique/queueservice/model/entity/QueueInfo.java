@@ -17,5 +17,5 @@ public class QueueInfo {
 
     private long estimateWaitingTime;
 
-    private String seatTypeName;
+    private SeatType seatType;
 }

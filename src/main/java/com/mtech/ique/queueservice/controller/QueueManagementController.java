@@ -1,9 +1,6 @@
 package com.mtech.ique.queueservice.controller;
 
 import com.mtech.ique.queueservice.model.entity.QueueInfo;
-import com.mtech.ique.queueservice.model.entity.QueueTicket;
-import com.mtech.ique.queueservice.service.QueueManagementService;
-import com.mtech.ique.queueservice.model.entity.QueueTicket;
 import com.mtech.ique.queueservice.service.QueueManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,14 +13,13 @@ import java.util.List;
 
 @CrossOrigin
 @Controller
-//@RequestMapping("/queues")
 public class QueueManagementController {
 
     @Autowired private QueueManagementService queueManagementService;
 
     @PostMapping("/queues/tickets")
-    public ResponseEntity createQueueTickets(@RequestParam Long queueId){
-        HashMap<String, Object> hashmap = queueManagementService.createTicket(queueId);
+    public ResponseEntity createQueueTickets(@RequestParam("queueId") Long queueId, @RequestParam("customerId") Long customerId, @RequestParam("storeId") Long storeId){
+        HashMap<String, Object> hashmap = queueManagementService.createTicket(queueId, customerId, storeId);
         if (hashmap.isEmpty())
             return new ResponseEntity<>("Fail to find queue", HttpStatus.CONFLICT);
         return new ResponseEntity<>(hashmap, HttpStatus.CREATED);
@@ -77,5 +73,11 @@ public class QueueManagementController {
         if (queueManagementService.checkIn(ticketId))
             return new ResponseEntity<>("Success", HttpStatus.OK);
         return new ResponseEntity<>("error", HttpStatus.UNAUTHORIZED);
+    }
+
+    @PostMapping("/queues/skip")
+    public ResponseEntity skipCustomer(@RequestParam Long ticketId){
+        queueManagementService.skipCustomer(ticketId);
+        return new ResponseEntity("skip customer", HttpStatus.OK);
     }
 }
