@@ -13,15 +13,13 @@ import java.util.List;
 
 @CrossOrigin
 @Controller
-@RequestMapping("/queues")
 public class QueueManagementController {
 
     @Autowired private QueueManagementService queueManagementService;
 
-
-    @PostMapping("/tickets")
-    public ResponseEntity createQueueTickets(@RequestParam Long queueId, Long customerId){
-        HashMap<String, Object> hashmap = queueManagementService.createTicket(queueId, customerId);
+    @PostMapping("/queues/tickets")
+    public ResponseEntity createQueueTickets(@RequestParam("queueId") Long queueId, @RequestParam("customerId") Long customerId, @RequestParam("storeId") Long storeId){
+        HashMap<String, Object> hashmap = queueManagementService.createTicket(queueId, customerId, storeId);
         if (hashmap.isEmpty())
             return new ResponseEntity<>("Fail to find queue", HttpStatus.CONFLICT);
         return new ResponseEntity<>(hashmap, HttpStatus.CREATED);
@@ -76,5 +74,11 @@ public class QueueManagementController {
         if (queueManagementService.checkIn(queueId))
             return new ResponseEntity<>("Success", HttpStatus.OK);
         return new ResponseEntity<>("error", HttpStatus.UNAUTHORIZED);
+    }
+
+    @PostMapping("/queues/skip")
+    public ResponseEntity skipCustomer(@RequestParam Long ticketId){
+        queueManagementService.skipCustomer(ticketId);
+        return new ResponseEntity("skip customer", HttpStatus.OK);
     }
 }
