@@ -11,15 +11,18 @@ import java.util.*;
 
 @Service
 public class QueueManagementImpl implements QueueManagementService {
+
   @Autowired private QueueTicketRepository queueTicketRepository;
   private ArrayList<QueueList> queueList = new ArrayList<>();
 
   @Override
   public HashMap<String, Object> createTicket(Long queueId, Long customerId, Long storeId) {
+
     HashMap<String, Object> hashMap = new HashMap<>();
     System.out.println(queueList.size());
     for (QueueList queue : queueList) {
       if (queue.getQueueId() == queueId) {
+
         // initiate Ticket
         QueueTicket queueTicket = new QueueTicket();
         queueTicket.setQueueNumber(queue.getQueueNumber() + 1);
@@ -28,17 +31,21 @@ public class QueueManagementImpl implements QueueManagementService {
         queueTicket.setStoreId(storeId);
         // insert queueTicket into sql
         queueTicketRepository.save(queueTicket);
+
         // update queue information
         queue.getQueueTickets().add(queueTicket);
         queue.setWaitingSize(queue.getWaitingSize() + 1);
         queue.setEstimateWaitingTime(queue.getWaitingSize() * 5);
+
         queue.setQueueNumber(queue.getQueueNumber() + 1);
+
         // format return
         hashMap.put("ticketId", queueTicket.getTicketId());
         hashMap.put("queueNumber", queueTicket.getQueueNumber());
         hashMap.put("seatTypeName", queueTicket.getSeatType().getName());
         hashMap.put("waitingSize", queue.getWaitingSize());
         hashMap.put("estimateWaitingTime", queue.getEstimateWaitingTime());
+
         System.out.print(queueTicket.getQueueNumber());
         return hashMap;
       }
@@ -70,6 +77,7 @@ public class QueueManagementImpl implements QueueManagementService {
         }
       }
     }
+
     return queueInfo;
   }
 
@@ -178,6 +186,7 @@ public class QueueManagementImpl implements QueueManagementService {
     queueTicket.setStatus(TicketStatus.SKIPPED.name());
     queueTicketRepository.save(queueTicket);
     checkIn(ticketId);
+
   }
 
   @Override
