@@ -39,12 +39,12 @@ public class QueueManagementController {
     }
 
     @GetMapping("/tickets")
-    public ResponseEntity getQueueTickets(@RequestParam("userId") Long userId, @RequestParam("storeId") Long storeId){
+    public ResponseEntity getQueueTickets(@RequestParam(name="userId", required = false) Long userId, @RequestParam(name="storeId",required = false) Long storeId){
         if (userId == null && storeId != null){
-            return new ResponseEntity<>(queueManagementService.getQueueTicketsByUser(userId), HttpStatus.OK);
+            return new ResponseEntity<>(queueManagementService.getQueueTicketsByStore(storeId), HttpStatus.OK);
         }
         if (userId != null && storeId == null){
-            return new ResponseEntity<>(queueManagementService.getQueueTicketsByStore(storeId), HttpStatus.OK);
+            return new ResponseEntity<>(queueManagementService.getQueueTicketsByUser(userId), HttpStatus.OK);
         }
         if (userId != null && storeId != null){
             return new ResponseEntity<>(queueManagementService.getQueueTicketsByUserAndStore(userId, storeId), HttpStatus.OK);
@@ -71,8 +71,8 @@ public class QueueManagementController {
     }
 
     @PostMapping("/checkin")
-    public ResponseEntity<Object> checkinForCustomer(@RequestParam Long queueId){
-        if (queueManagementService.checkIn(queueId))
+    public ResponseEntity<Object> checkinForCustomer(@RequestParam Long ticketId){
+        if (queueManagementService.checkIn(ticketId))
             return new ResponseEntity<>("Success", HttpStatus.OK);
         return new ResponseEntity<>("error", HttpStatus.UNAUTHORIZED);
     }
