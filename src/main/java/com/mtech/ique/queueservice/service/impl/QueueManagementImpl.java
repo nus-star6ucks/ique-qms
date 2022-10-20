@@ -45,8 +45,8 @@ public class QueueManagementImpl implements QueueManagementService {
         hashMap.put("ticketId", queueTicket.getTicketId());
         hashMap.put("queueNumber", queueTicket.getQueueNumber());
         hashMap.put("seatTypeName", queueTicket.getSeatType().getName());
-        hashMap.put("waitingSize", queue.getWaitingSize());
-        hashMap.put("estimateWaitingTime", queue.getEstimateWaitingTime());
+        hashMap.put("waitingSize", queue.getWaitingSize() - 1);
+        hashMap.put("estimateWaitingTime", queue.getEstimateWaitingTime() - 5);
 
         System.out.print(queueTicket.getQueueNumber());
         return hashMap;
@@ -60,7 +60,7 @@ public class QueueManagementImpl implements QueueManagementService {
     HashMap<String, Object> queueInfo = new HashMap<>();
     for (QueueList queue : queueList) {
       for (QueueTicket queueTicket : queue.getQueueTickets()) {
-        if (queueTicket.getTicketId() == ticketId) {
+        if (queueTicket.getTicketId().equals(ticketId)) {
           queueInfo.put("id", ticketId);
           queueInfo.put("storeId", queueTicket.getStoreId());
           queueInfo.put("customerId", queueTicket.getCustomerId());
@@ -85,13 +85,16 @@ public class QueueManagementImpl implements QueueManagementService {
 
   @Override
   public boolean checkIn(Long ticketId) {
+
     for (QueueList queue : queueList) {
+      LinkedList<QueueTicket> queueListList = queue.getQueueTickets();
       for (QueueTicket queueTicket : queue.getQueueTickets()) {
-        if (queueTicket.getTicketId() == ticketId) {
-          queue.getQueueTickets().poll();
+        if (queueTicket.getTicketId().equals(ticketId)) {
+          queueListList.poll();
           queue.setWaitingSize(queue.getWaitingSize() - 1);
           queue.setEstimateWaitingTime(queue.getWaitingSize() * 5);
-          queueTicket.setStatus(TicketStatus.SEATED.name());
+          queueTicket.setStatus(TicketStatus.SEATED.toString());
+          queue.setQueueTickets(queueListList);
           // update database
           queueTicketRepository.save(queueTicket);
           return true;
@@ -163,7 +166,7 @@ public class QueueManagementImpl implements QueueManagementService {
     List<QueueTicket> queueTickets = queueTicketRepository.findAllByCustomerId(userId);
     List<QueueTicket> queueTicketsFinal = new ArrayList<>();
     for (QueueTicket queueTicket : queueTickets) {
-      if (queueTicket.getStatus() == TicketStatus.PENDING.toString()) {
+      if (queueTicket.getStatus().equals(TicketStatus.PENDING.toString())) {
         queueTicketsFinal.add(queueTicket);
       }
     }
@@ -175,7 +178,7 @@ public class QueueManagementImpl implements QueueManagementService {
     List<QueueTicket> queueTickets = queueTicketRepository.findAllByStoreId(storeId);
     List<QueueTicket> queueTicketsFinal = new ArrayList<>();
     for (QueueTicket queueTicket : queueTickets) {
-      if (queueTicket.getStatus() == TicketStatus.PENDING.name()) {
+      if (queueTicket.getStatus().equals(TicketStatus.PENDING.toString())) {
         queueTicketsFinal.add(queueTicket);
       }
     }
@@ -184,10 +187,10 @@ public class QueueManagementImpl implements QueueManagementService {
 
   @Override
   public void skipCustomer(Long ticketId) {
-    QueueTicket queueTicket = queueTicketRepository.findById(ticketId).get();
-    queueTicket.setStatus(TicketStatus.SKIPPED.name());
-    queueTicketRepository.save(queueTicket);
     checkIn(ticketId);
+    QueueTicket queueTicket = queueTicketRepository.findById(ticketId).get();
+    queueTicket.setStatus(TicketStatus.SKIPPED.toString());
+    queueTicketRepository.save(queueTicket);
 
   }
 
@@ -196,8 +199,8 @@ public class QueueManagementImpl implements QueueManagementService {
     List<QueueTicket> queueTicketsByUser = queueTicketRepository.findAllByCustomerId(userId);
     List<QueueTicket> queueTickets = new ArrayList<>();
     for (QueueTicket queueTicket : queueTicketsByUser) {
-      if (queueTicket.getStoreId() == storeId
-          && queueTicket.getStatus() == TicketStatus.PENDING.name()) {
+      if (queueTicket.getStoreId().equals(storeId)
+          && queueTicket.getStatus().equals(TicketStatus.PENDING.toString())) {
         queueTickets.add(queueTicket);
       }
     }
