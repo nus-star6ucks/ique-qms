@@ -10,18 +10,19 @@ import java.util.LinkedList;
 @Setter
 @Getter
 public class QueueList {
-    private long queueId;
-    private LinkedList<QueueTicket> queueTickets;
-    private long estimateWaitingTime;
-    private SeatType seatType;
-    private long waitingSize;
-    private long queueNumber;
-    public QueueList() {
-        queueId = 0;
-        queueTickets = new LinkedList<QueueTicket>();
-        estimateWaitingTime = 0;
-        seatType = new SeatType();
-        waitingSize = 0;
-        queueNumber = 0;
-    }
+  private long queueId;
+  private LinkedList<QueueTicket> queueTickets;
+  private long estimateWaitingTime;
+  private SeatType seatType;
+  private long waitingSize;
+  private long queueNumber;
+
+  public QueueList() {
+    queueId = 0;
+    queueTickets = new LinkedList<QueueTicket>();
+    estimateWaitingTime = 0;
+    seatType = new SeatType();
+    waitingSize = 0;
+    queueNumber = 0;
+  }
 }

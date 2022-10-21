@@ -1,49 +1,49 @@
 package com.mtech.ique.queueservice.model.entity;
 
-
 public class User {
-    private Long userId;
-    private String password;
-    private String userName;
-    private String phoneNumber;
-    private enum status{}
+  private Long userId;
+  private String password;
+  private String userName;
+  private String phoneNumber;
 
-    public User(Long userId, String password, String userName, String phoneNumber) {
-        this.userId = userId;
-        this.password = password;
-        this.userName = userName;
-        this.phoneNumber = phoneNumber;
-    }
+  private enum status {}
 
-    public Long getUserId() {
-        return userId;
-    }
+  public User(Long userId, String password, String userName, String phoneNumber) {
+    this.userId = userId;
+    this.password = password;
+    this.userName = userName;
+    this.phoneNumber = phoneNumber;
+  }
 
-    public String getPassword() {
-        return password;
-    }
+  public Long getUserId() {
+    return userId;
+  }
 
-    public String getUserName() {
-        return userName;
-    }
+  public String getPassword() {
+    return password;
+  }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
+  public String getUserName() {
+    return userName;
+  }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
+  public String getPhoneNumber() {
+    return phoneNumber;
+  }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+  public void setUserId(Long userId) {
+    this.userId = userId;
+  }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
+  public void setPassword(String password) {
+    this.password = password;
+  }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
+  public void setUserName(String userName) {
+    this.userName = userName;
+  }
+
+  public void setPhoneNumber(String phoneNumber) {
+    this.phoneNumber = phoneNumber;
+  }
 }
