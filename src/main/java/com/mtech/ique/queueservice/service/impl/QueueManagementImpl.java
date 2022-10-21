@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class QueueManagementImpl implements QueueManagementService {
@@ -105,7 +106,35 @@ public class QueueManagementImpl implements QueueManagementService {
   }
 
   @Override
-  public void notify(User user) {}
+  public void call(Long ticketId) {
+    // find customer by ticketId
+    Optional<QueueTicket> queueTicketOp = queueTicketRepository.findById(ticketId);
+    if (queueTicketOp.isPresent()) {
+      QueueTicket queueTicket = queueTicketOp.get();
+      Long customerId = queueTicket.getCustomerId();
+      // TODO notify customer
+
+      // find next 2 customers in queue
+      Long queueId = queueTicket.getQueueId();
+      Optional<QueueList> queueOp =
+          queueList.stream().filter(queue -> queueId == queue.getQueueId()).findFirst();
+
+      if (queueOp.isPresent()) {
+        LinkedList<QueueTicket> queueTickets = queueOp.get().getQueueTickets();
+        // only send notification if queue.size > 0
+        if (queueTickets.size() > 0) {
+          List<QueueTicket> topTwoTickets =
+              queueTickets.stream().limit(2).collect(Collectors.toList());
+
+          topTwoTickets.forEach(
+              ticket -> {
+                Long customerId1 = ticket.getCustomerId();
+                // TODO notify users
+              });
+        }
+      }
+    }
+  }
 
   @Override
   public List<HashMap<String, Object>> createQueues(List<HashMap<String, Object>> seatTypeList) {
