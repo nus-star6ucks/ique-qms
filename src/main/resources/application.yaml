@@ -2,24 +2,28 @@ server:
   port: 8083
 
 spring:
+  application:
+    name: ique-qms
   cloud:
     gcp:
-      project-id: ique-star6ucks
       sql:
-        instance-connection-name: ique-star6ucks:asia-southeast1:iqueue
-        database-name: ique
+        database-name: qms
+        instance-connection-name: ique-star6ucks:asia-southeast1:queue-db
+      project-id: ique-star6ucks
       credentials:
-        location: file:/secrets/credentials.json
+        location: file:_key.json
   datasource:
-    url: jdbc:postgresql://ique
-    username: ${DB_USER:ums}
-    password: ${DB_PASS:&2ZxqMQF'2{fQT}b}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${MYSQL_URL:jdbc:mysql://localhost/queues-db?createDatabaseIfNotExist=true}
+    username: queue-manager
+
+    password: rTJBMdkj6LrCSf0+
     initialization-mode: always
   jpa:
     properties:
       hibernate:
         # The SQL dialect makes Hibernate generate better SQL for the chosen database
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        dialect: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       # Hibernate ddl auto (create, create-drop, validate, update)
       ddl-auto: update
