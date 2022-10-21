@@ -78,6 +78,12 @@ public class QueueManagementController {
     return new ResponseEntity<>(queueInfo, HttpStatus.OK);
   }
 
+  @PostMapping("/call")
+  public ResponseEntity<Object> callForCustomer(@RequestParam Long ticketId) {
+    queueManagementService.call(ticketId);
+    return new ResponseEntity<>(HttpStatus.OK);
+  }
+
   @PostMapping("/checkin")
   public ResponseEntity<Object> checkinForCustomer(@RequestParam Long ticketId) {
     if (queueManagementService.checkIn(ticketId))
