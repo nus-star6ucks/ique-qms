@@ -15,7 +15,7 @@ public interface QueueManagementService {
 
   boolean checkIn(Long ticketId);
 
-  void call(Long ticket);
+  void call(Long ticketId);
 
   List<HashMap<String, Object>> createQueues(List<HashMap<String, Object>> seatTypeList);
 
