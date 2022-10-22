@@ -80,7 +80,11 @@ public class QueueManagementController {
 
   @PostMapping("/call")
   public ResponseEntity<Object> callForCustomer(@RequestParam Long ticketId) {
-    queueManagementService.call(ticketId);
+    try {
+      queueManagementService.call(ticketId);
+    } catch (Exception e) {
+      System.out.println("e.getMessage() = " + e.getMessage());
+    }
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
