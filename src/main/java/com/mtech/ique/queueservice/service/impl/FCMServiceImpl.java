@@ -1,9 +1,18 @@
 package com.mtech.ique.queueservice.service.impl;
 
+import com.google.api.core.ApiFuture;
+import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.WriteResult;
+import com.google.firebase.cloud.FirestoreClient;
 import com.google.firebase.messaging.*;
 import com.mtech.ique.queueservice.model.DirectNotification;
+import com.mtech.ique.queueservice.model.entity.UserToken;
 import com.mtech.ique.queueservice.service.FCMService;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class FCMServiceImpl implements FCMService {
@@ -28,5 +37,32 @@ public class FCMServiceImpl implements FCMService {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  public String getTokenByUserId(Long userId) throws ExecutionException, InterruptedException {
+    Firestore dbFirestore = FirestoreClient.getFirestore();
+    DocumentReference documentReference =
+        dbFirestore.collection("userTokens").document(userId.toString());
+    ApiFuture<DocumentSnapshot> future = documentReference.get();
+
+    DocumentSnapshot document = future.get();
+
+    UserToken userToken = null;
+    if (document.exists()) {
+      userToken = document.toObject(UserToken.class);
+      return userToken.getToken();
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public void registerToken(Long userId, String token) {
+    Firestore dbFirestore = FirestoreClient.getFirestore();
+
+    UserToken userToken = UserToken.builder().token(token).userId(userId).build();
+
+    ApiFuture<WriteResult> collectionApiFuture =
+        dbFirestore.collection("userTokens").document(userId.toString()).set(userToken);
   }
 }
