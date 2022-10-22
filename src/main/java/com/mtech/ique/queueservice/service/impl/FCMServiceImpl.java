@@ -1,9 +1,6 @@
 package com.mtech.ique.queueservice.service.impl;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.WebpushConfig;
-import com.google.firebase.messaging.WebpushNotification;
+import com.google.firebase.messaging.*;
 import com.mtech.ique.queueservice.model.DirectNotification;
 import com.mtech.ique.queueservice.service.FCMService;
 import org.springframework.stereotype.Service;
@@ -25,6 +22,11 @@ public class FCMServiceImpl implements FCMService {
                     .build())
             .setToken(notification.getTarget())
             .build();
-    FirebaseMessaging.getInstance().sendAsync(message);
+    try {
+      String response = FirebaseMessaging.getInstance().send(message);
+      System.out.println("response = " + response);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }
