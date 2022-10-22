@@ -12,29 +12,31 @@ import com.mtech.ique.queueservice.model.entity.UserToken;
 import com.mtech.ique.queueservice.service.FCMService;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.ExecutionException;
-
 @Service
 public class FCMServiceImpl implements FCMService {
   @Override
   public void sedNotificationToTarget(DirectNotification notification) {
+
+    WebpushNotification push =
+        WebpushNotification.builder()
+            .setTitle(notification.getTitle())
+            .setBody(notification.getMessage())
+            .setIcon("https://ique.vercel.app/favicon-32x32.png")
+            //            .setImage("https://ique.vercel.app/demo/photo.48.jpeg")
+            .build();
+
+    WebpushConfig webpushConfig = WebpushConfig.builder().setNotification(push).build();
+
     Message message =
         Message.builder()
-            .setWebpushConfig(
-                WebpushConfig.builder()
-                    .setNotification(
-                        WebpushNotification.builder()
-                            .setTitle(notification.getTitle())
-                            .setBody(notification.getMessage())
-                            .setIcon("https://assets.mapquestapi.com/icon/v2/circle@2x.png")
-                            .build())
-                    .build())
+            .setWebpushConfig(webpushConfig)
             .setToken(notification.getTarget())
             .build();
+
     try {
       String response = FirebaseMessaging.getInstance().send(message);
       System.out.println("response = " + response);
-    } catch (Exception e) {
+    } catch (FirebaseMessagingException e) {
       e.printStackTrace();
     }
   }
