@@ -39,13 +39,18 @@ public class FCMServiceImpl implements FCMService {
     }
   }
 
-  public String getTokenByUserId(Long userId) throws ExecutionException, InterruptedException {
+  public String getTokenByUserId(Long userId) {
     Firestore dbFirestore = FirestoreClient.getFirestore();
     DocumentReference documentReference =
         dbFirestore.collection("userTokens").document(userId.toString());
     ApiFuture<DocumentSnapshot> future = documentReference.get();
 
-    DocumentSnapshot document = future.get();
+    DocumentSnapshot document = null;
+    try {
+      document = future.get();
+    } catch (Exception e) {
+      System.out.println("ERROR: " + e.getMessage());
+    }
 
     UserToken userToken = null;
     if (document.exists()) {
