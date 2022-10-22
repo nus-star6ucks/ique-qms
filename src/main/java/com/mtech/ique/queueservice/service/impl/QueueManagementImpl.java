@@ -118,7 +118,7 @@ public class QueueManagementImpl implements QueueManagementService {
     if (queueTicketOp.isPresent()) {
       QueueTicket queueTicket = queueTicketOp.get();
       Long customerId = queueTicket.getCustomerId();
-      // TODO notify customer
+      // notify customer
       DirectNotification notification = new DirectNotification();
       notification.setMessage("we are ready to serve");
       notification.setTitle("title");
@@ -143,7 +143,7 @@ public class QueueManagementImpl implements QueueManagementService {
           topTwoTickets.forEach(
               nextTicket -> {
                 Long customerId1 = nextTicket.getCustomerId();
-                // TODO notify
+                // notify
                 DirectNotification nextNotification = new DirectNotification();
                 nextNotification.setMessage("you are next");
                 nextNotification.setTitle("title");
