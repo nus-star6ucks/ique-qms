@@ -3,6 +3,7 @@ package com.mtech.ique.queueservice.service.impl;
 import com.mtech.ique.queueservice.model.entity.*;
 import com.mtech.ique.queueservice.model.enums.TicketStatus;
 import com.mtech.ique.queueservice.repository.QueueTicketRepository;
+import com.mtech.ique.queueservice.service.FCMService;
 import com.mtech.ique.queueservice.service.QueueManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,9 @@ import java.util.stream.Collectors;
 public class QueueManagementImpl implements QueueManagementService {
 
   @Autowired private QueueTicketRepository queueTicketRepository;
+
+  @Autowired FCMService fcmService;
+
   private ArrayList<QueueList> queueList = new ArrayList<>();
 
   @Override
@@ -113,6 +117,7 @@ public class QueueManagementImpl implements QueueManagementService {
       QueueTicket queueTicket = queueTicketOp.get();
       Long customerId = queueTicket.getCustomerId();
       // TODO notify customer
+      //      fcmService.sedNotificationToTarget();
 
       // find next 2 customers in queue
       Long queueId = queueTicket.getQueueId();
@@ -121,15 +126,20 @@ public class QueueManagementImpl implements QueueManagementService {
 
       if (queueOp.isPresent()) {
         LinkedList<QueueTicket> queueTickets = queueOp.get().getQueueTickets();
-        // only send notification if queue.size > 0
-        if (queueTickets.size() > 0) {
+        // only send notification if queue.size > 1
+        if (queueTickets.size() > 1) {
           List<QueueTicket> topTwoTickets =
-              queueTickets.stream().limit(2).collect(Collectors.toList());
+              queueTickets.stream()
+                  .filter(t -> t.getTicketId() != ticketId)
+                  .limit(3)
+                  .collect(Collectors.toList());
 
           topTwoTickets.forEach(
-              ticket -> {
-                Long customerId1 = ticket.getCustomerId();
-                // TODO notify users
+              nextTicket -> {
+                Long customerId1 = nextTicket.getCustomerId();
+                // TODO notify
+                //                fcmService.sedNotificationToTarget();
+
               });
         }
       }
