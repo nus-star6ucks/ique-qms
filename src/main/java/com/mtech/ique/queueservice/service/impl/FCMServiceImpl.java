@@ -6,7 +6,9 @@ import com.google.firebase.messaging.WebpushConfig;
 import com.google.firebase.messaging.WebpushNotification;
 import com.mtech.ique.queueservice.model.DirectNotification;
 import com.mtech.ique.queueservice.service.FCMService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class FCMServiceImpl implements FCMService {
   @Override
   public void sedNotificationToTarget(DirectNotification notification) {
