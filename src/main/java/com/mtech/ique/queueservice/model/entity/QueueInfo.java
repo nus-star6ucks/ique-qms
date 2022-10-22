@@ -11,11 +11,11 @@ import lombok.Setter;
 @Getter
 public class QueueInfo {
 
-    private long queueId;
+  private long queueId;
 
-    private long waitingSize;
+  private long waitingSize;
 
-    private long estimateWaitingTime;
+  private long estimateWaitingTime;
 
-    private SeatType seatType;
+  private SeatType seatType;
 }

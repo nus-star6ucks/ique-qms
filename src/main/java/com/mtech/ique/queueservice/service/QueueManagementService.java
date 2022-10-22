@@ -9,25 +9,25 @@ import java.util.List;
 
 public interface QueueManagementService {
 
-    HashMap<String, Object> createTicket(Long queueId, Long customerId, Long storeId);
+  HashMap<String, Object> createTicket(Long queueId, Long customerId, Long storeId);
 
-    HashMap<String, Object> getQueueTicketDetail(Long ticketId);
+  HashMap<String, Object> getQueueTicketDetail(Long ticketId);
 
-    boolean checkIn(Long ticketId);
+  boolean checkIn(Long ticketId);
 
-    void notify(User user);
+  void notify(User user);
 
-    List<HashMap<String, Object>> createQueues(List<HashMap<String, Object>> seatTypeList);
+  List<HashMap<String, Object>> createQueues(List<HashMap<String, Object>> seatTypeList);
 
-    void deleteQueues(List<Long> queueIdList);
+  void deleteQueues(List<Long> queueIdList);
 
-    QueueInfo getQueueInfoDetail(Long queueId);
+  QueueInfo getQueueInfoDetail(Long queueId);
 
-    List<QueueTicket> getQueueTicketsByUser(Long userId);
+  List<QueueTicket> getQueueTicketsByUser(Long userId);
 
-    List<QueueTicket> getQueueTicketsByStore(Long storeId);
-    
-    void skipCustomer(Long ticketId);
+  List<QueueTicket> getQueueTicketsByStore(Long storeId);
 
-    List<QueueTicket> getQueueTicketsByUserAndStore(Long userId, Long storeId);
+  void skipCustomer(Long ticketId);
+
+  List<QueueTicket> getQueueTicketsByUserAndStore(Long userId, Long storeId);
 }

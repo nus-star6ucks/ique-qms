@@ -1,13 +1,13 @@
-//package com.mtech.ique.queueservice;
+// package com.mtech.ique.queueservice;
 //
-//import org.junit.jupiter.api.Test;
-//import org.springframework.boot.test.context.SpringBootTest;
+// import org.junit.jupiter.api.Test;
+// import org.springframework.boot.test.context.SpringBootTest;
 //
-//@SpringBootTest
-//class QueueServiceApplicationTests {
+// @SpringBootTest
+// class QueueServiceApplicationTests {
 //
 //	@Test
 //	void contextLoads() {
 //	}
 //
-//}
+// }

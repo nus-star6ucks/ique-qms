@@ -191,7 +191,6 @@ public class QueueManagementImpl implements QueueManagementService {
     QueueTicket queueTicket = queueTicketRepository.findById(ticketId).get();
     queueTicket.setStatus(TicketStatus.SKIPPED.toString());
     queueTicketRepository.save(queueTicket);
-
   }
 
   @Override
