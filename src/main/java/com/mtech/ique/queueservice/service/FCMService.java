@@ -7,9 +7,7 @@ import java.util.concurrent.ExecutionException;
 public interface FCMService {
   void sedNotificationToTarget(DirectNotification directNotification);
 
-  String getTokenByUserId(Long userId) throws ExecutionException, InterruptedException {
-    return null;
-  }
+  String getTokenByUserId(Long userId);
 
   void registerToken(Long userId, String token);
 }
