@@ -6,6 +6,7 @@ import com.mtech.ique.queueservice.model.entity.User;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public interface QueueManagementService {
 
@@ -15,7 +16,7 @@ public interface QueueManagementService {
 
   boolean checkIn(Long ticketId);
 
-  void call(Long ticketId);
+  void call(Long ticketId) throws ExecutionException, InterruptedException;
 
   List<HashMap<String, Object>> createQueues(List<HashMap<String, Object>> seatTypeList);
 
