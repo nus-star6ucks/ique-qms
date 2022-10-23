@@ -11,16 +11,17 @@ spring:
         instance-connection-name: ique-star6ucks:asia-southeast1:queue-db
       project-id: ique-star6ucks
       credentials:
-#        location: file:/secrets/credentials.json
-        location: file:_key.json
+        location: file:/secrets/credentials.json
+#        location: file:_key.json
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${MYSQL_URL:jdbc:mysql://localhost/queues-db?createDatabaseIfNotExist=true}
-    username: queue-manager
-    password: rTJBMdkj6LrCSf0+
-#    username: ${DB_USER}
-#    password: ${DB_PASS}
+
+    username: ${DB_USER}
+    password: ${DB_PASS}
     #    for local debug
+#    username: queue-manager
+#    password: rTJBMdkj6LrCSf0+
 
     initialization-mode: always
   jpa:
