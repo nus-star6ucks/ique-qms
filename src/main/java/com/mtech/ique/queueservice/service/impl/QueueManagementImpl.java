@@ -1,19 +1,25 @@
 package com.mtech.ique.queueservice.service.impl;
 
+import com.mtech.ique.queueservice.model.DirectNotification;
 import com.mtech.ique.queueservice.model.entity.*;
 import com.mtech.ique.queueservice.model.enums.TicketStatus;
 import com.mtech.ique.queueservice.repository.QueueTicketRepository;
+import com.mtech.ique.queueservice.service.FCMService;
 import com.mtech.ique.queueservice.service.QueueManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Service
 public class QueueManagementImpl implements QueueManagementService {
 
   @Autowired private QueueTicketRepository queueTicketRepository;
+
+  @Autowired FCMService fcmService;
+
   private ArrayList<QueueList> queueList = new ArrayList<>();
 
   @Override
@@ -116,13 +122,18 @@ public class QueueManagementImpl implements QueueManagementService {
   }
 
   @Override
-  public void call(Long ticketId) {
+  public void call(Long ticketId) throws ExecutionException, InterruptedException {
     // find customer by ticketId
     Optional<QueueTicket> queueTicketOp = queueTicketRepository.findById(ticketId);
     if (queueTicketOp.isPresent()) {
       QueueTicket queueTicket = queueTicketOp.get();
       Long customerId = queueTicket.getCustomerId();
-      // TODO notify customer
+      // notify customer
+      DirectNotification notification = new DirectNotification();
+      notification.setMessage("we are ready to serve");
+      notification.setTitle("title");
+      notification.setTarget(fcmService.getTokenByUserId(customerId));
+      fcmService.sedNotificationToTarget(notification);
 
       // find next 2 customers in queue
       Long queueId = queueTicket.getQueueId();
@@ -131,15 +142,27 @@ public class QueueManagementImpl implements QueueManagementService {
 
       if (queueOp.isPresent()) {
         LinkedList<QueueTicket> queueTickets = queueOp.get().getQueueTickets();
-        // only send notification if queue.size > 0
-        if (queueTickets.size() > 0) {
+        // only send notification if queue.size > 1
+        if (queueTickets.size() > 1) {
           List<QueueTicket> topTwoTickets =
-              queueTickets.stream().limit(2).collect(Collectors.toList());
+              queueTickets.stream()
+                  .filter(t -> t.getTicketId() != ticketId)
+                  .limit(3)
+                  .collect(Collectors.toList());
 
           topTwoTickets.forEach(
-              ticket -> {
-                Long customerId1 = ticket.getCustomerId();
-                // TODO notify users
+              nextTicket -> {
+                Long customerId1 = nextTicket.getCustomerId();
+                // notify
+                DirectNotification nextNotification = new DirectNotification();
+                nextNotification.setMessage("you are next");
+                nextNotification.setTitle("title");
+                try {
+                  nextNotification.setTarget(fcmService.getTokenByUserId(customerId));
+                } catch (Exception e) {
+                  e.printStackTrace();
+                }
+                fcmService.sedNotificationToTarget(nextNotification);
               });
         }
       }
