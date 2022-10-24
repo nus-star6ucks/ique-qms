@@ -81,23 +81,28 @@ public class QueueManagementController {
   @PostMapping("/call")
   public ResponseEntity<Object> callForCustomer(@RequestParam Long ticketId) {
     try {
-      queueManagementService.call(ticketId);
+      String call = queueManagementService.call(ticketId);
+      return new ResponseEntity<>(call, HttpStatus.OK);
     } catch (Exception e) {
       System.out.println("e.getMessage() = " + e.getMessage());
+      return new ResponseEntity<>("error", HttpStatus.OK);
     }
-    return new ResponseEntity<>(HttpStatus.OK);
   }
 
   @PostMapping("/checkin")
   public ResponseEntity<Object> checkinForCustomer(@RequestParam Long ticketId) {
-    if (queueManagementService.checkIn(ticketId))
-      return new ResponseEntity<>("Success", HttpStatus.OK);
+    String checkInResponse = queueManagementService.checkIn(ticketId);
+    if (checkInResponse != null) return new ResponseEntity<>(checkInResponse, HttpStatus.OK);
     return new ResponseEntity<>("error", HttpStatus.UNAUTHORIZED);
   }
 
   @PostMapping("/skip")
-  public ResponseEntity skipCustomer(@RequestParam Long ticketId) {
-    queueManagementService.skipCustomer(ticketId);
-    return new ResponseEntity("skip customer", HttpStatus.OK);
+  public ResponseEntity<Object> skipCustomer(@RequestParam Long ticketId) {
+    String response = queueManagementService.skipCustomer(ticketId);
+    if (response != null) {
+      return new ResponseEntity(response, HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>("error", HttpStatus.OK);
+    }
   }
 }

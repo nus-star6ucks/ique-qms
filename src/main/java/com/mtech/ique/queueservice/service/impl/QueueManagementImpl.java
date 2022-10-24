@@ -91,7 +91,7 @@ public class QueueManagementImpl implements QueueManagementService {
   }
 
   @Override
-  public boolean checkIn(Long ticketId) {
+  public String checkIn(Long ticketId) {
     for (QueueList queue : queueList) {
       LinkedList<QueueTicket> queueTicketList = queue.getQueueTickets();
       for (QueueTicket queueTicket : queue.getQueueTickets()) {
@@ -109,16 +109,15 @@ public class QueueManagementImpl implements QueueManagementService {
 
           // notify next customer in queue
           Long queueId = queueTicket.getQueueId();
-          notifyNextCustomer(queueId);
-          return true;
+          return notifyNextCustomer(queueId);
         }
       }
     }
-    return false;
+    return null;
   }
 
   @Override
-  public void call(Long ticketId) throws ExecutionException, InterruptedException {
+  public String call(Long ticketId) throws ExecutionException, InterruptedException {
     // find customer by ticketId
     Optional<QueueTicket> queueTicketOp = queueTicketRepository.findById(ticketId);
     if (queueTicketOp.isPresent()) {
@@ -129,11 +128,12 @@ public class QueueManagementImpl implements QueueManagementService {
       notification.setMessage("We are ready to serve!");
       notification.setTitle("iQue");
       notification.setTarget(notificationService.getTokenByUserId(customerId));
-      notificationService.sendNotificationToTarget(notification);
+      return notificationService.sendNotificationToTarget(notification);
     }
+    return null;
   }
 
-  private void notifyNextCustomer(long queueId) {
+  private String notifyNextCustomer(long queueId) {
     // find next customers in queue
     Optional<QueueList> queueOp =
         queueList.stream().filter(queue -> queueId == queue.getQueueId()).findFirst();
@@ -153,9 +153,10 @@ public class QueueManagementImpl implements QueueManagementService {
         } catch (Exception e) {
           e.printStackTrace();
         }
-        notificationService.sendNotificationToTarget(nextNotification);
+        return notificationService.sendNotificationToTarget(nextNotification);
       }
     }
+    return null;
   }
 
   @Override
@@ -240,11 +241,16 @@ public class QueueManagementImpl implements QueueManagementService {
   }
 
   @Override
-  public void skipCustomer(Long ticketId) {
-    checkIn(ticketId);
-    QueueTicket queueTicket = queueTicketRepository.findById(ticketId).get();
-    queueTicket.setStatus(TicketStatus.SKIPPED.toString());
-    queueTicketRepository.save(queueTicket);
+  public String skipCustomer(Long ticketId) {
+    String checkInResult = checkIn(ticketId);
+    if (checkInResult != null) {
+
+      QueueTicket queueTicket = queueTicketRepository.findById(ticketId).get();
+      queueTicket.setStatus(TicketStatus.SKIPPED.toString());
+      queueTicketRepository.save(queueTicket);
+      return checkInResult;
+    }
+    return null;
   }
 
   @Override
