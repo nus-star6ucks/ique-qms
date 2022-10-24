@@ -38,7 +38,7 @@ public class NotificationServiceImpl implements NotificationService {
       String strJsonBody =
           "{"
               + "\"app_id\": \""
-              + NotificationServiceImpl.APP_ID
+              + APP_ID
               + "\","
               + "\"include_player_ids\": [\""
               + notification.getTarget()
@@ -46,6 +46,7 @@ public class NotificationServiceImpl implements NotificationService {
               + "\"data\": {\"foo\": \"bar\"},"
               + "\"contents\": {\"en\": \""
               + notification.getMessage()
+              + "\"}"
               + "}";
 
       System.out.println("strJsonBody:\n" + strJsonBody);
