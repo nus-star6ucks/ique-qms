@@ -216,25 +216,28 @@ public class QueueManagementImpl implements QueueManagementService {
   @Override
   public List<QueueTicket> getQueueTicketsByUser(Long userId) {
     List<QueueTicket> queueTickets = queueTicketRepository.findAllByCustomerId(userId);
-    List<QueueTicket> queueTicketsFinal = new ArrayList<>();
-    for (QueueTicket queueTicket : queueTickets) {
-      if (queueTicket.getStatus().equals(TicketStatus.PENDING.toString())) {
-        queueTicketsFinal.add(queueTicket);
-      }
-    }
-    return queueTicketsFinal;
+    return getQueueTicketsOfToday(queueTickets);
+  }
+
+  private Long getTimestampOfTodayMiddleNight() {
+    Calendar day = Calendar.getInstance();
+    day.set(Calendar.MILLISECOND, 0);
+    day.set(Calendar.SECOND, 0);
+    day.set(Calendar.MINUTE, 0);
+    day.set(Calendar.HOUR_OF_DAY, 0);
+    return day.getTimeInMillis();
   }
 
   @Override
   public List<QueueTicket> getQueueTicketsByStore(Long storeId) {
     List<QueueTicket> queueTickets = queueTicketRepository.findAllByStoreId(storeId);
-    List<QueueTicket> queueTicketsFinal = new ArrayList<>();
-    for (QueueTicket queueTicket : queueTickets) {
-      if (queueTicket.getStatus().equals(TicketStatus.PENDING.toString())) {
-        queueTicketsFinal.add(queueTicket);
-      }
-    }
-    return queueTicketsFinal;
+    return getQueueTicketsOfToday(queueTickets);
+  }
+
+  private List<QueueTicket> getQueueTicketsOfToday(List<QueueTicket> queueTickets) {
+    return queueTickets.stream()
+        .filter(t -> t.getStartTime() <= getTimestampOfTodayMiddleNight())
+        .collect(Collectors.toList());
   }
 
   @Override
