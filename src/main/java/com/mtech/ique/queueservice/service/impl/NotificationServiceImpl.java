@@ -21,7 +21,7 @@ public class NotificationServiceImpl implements NotificationService {
   public static final String APP_ID = "d4d2aaa1-6481-46fa-87c0-67c1800defef";
 
   @Override
-  public void sendNotificationToTarget(DirectNotification notification) {
+  public String sendNotificationToTarget(DirectNotification notification) {
 
     try {
       String jsonResponse;
@@ -70,9 +70,11 @@ public class NotificationServiceImpl implements NotificationService {
         scanner.close();
       }
       System.out.println("jsonResponse:\n" + jsonResponse);
+      return jsonResponse;
 
     } catch (Throwable t) {
       t.printStackTrace();
+      return "ERROR";
     }
   }
 

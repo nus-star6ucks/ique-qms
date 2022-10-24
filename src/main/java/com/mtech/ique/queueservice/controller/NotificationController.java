@@ -16,8 +16,8 @@ public class NotificationController {
 
   @PostMapping("/notification")
   ResponseEntity<String> sendNotificationToTarget(@RequestBody DirectNotification notification) {
-    notificationService.sendNotificationToTarget(notification);
-    return new ResponseEntity<>("success", HttpStatus.OK);
+    return new ResponseEntity<>(
+        notificationService.sendNotificationToTarget(notification), HttpStatus.OK);
   }
 
   @PostMapping("/registerToken")
