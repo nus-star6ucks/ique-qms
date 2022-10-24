@@ -92,18 +92,24 @@ public class QueueManagementImpl implements QueueManagementService {
 
   @Override
   public boolean checkIn(Long ticketId) {
-
     for (QueueList queue : queueList) {
-      LinkedList<QueueTicket> queueListList = queue.getQueueTickets();
+      LinkedList<QueueTicket> queueTicketList = queue.getQueueTickets();
       for (QueueTicket queueTicket : queue.getQueueTickets()) {
         if (queueTicket.getTicketId().equals(ticketId)) {
-          queueListList.poll();
+          // update queue
+          queueTicketList.poll();
           queue.setWaitingSize(queue.getWaitingSize() - 1);
           queue.setEstimateWaitingTime(queue.getWaitingSize() * 5);
+          queue.setQueueTickets(queueTicketList);
+
+          // update ticket info
           queueTicket.setStatus(TicketStatus.SEATED.toString());
-          queue.setQueueTickets(queueListList);
           // update database
           queueTicketRepository.save(queueTicket);
+
+          // notify next customer in queue
+          Long queueId = queueTicket.getQueueId();
+          notifyNextCustomer(queueId);
           return true;
         }
       }
@@ -124,37 +130,30 @@ public class QueueManagementImpl implements QueueManagementService {
       notification.setTitle("iQue");
       notification.setTarget(notificationService.getTokenByUserId(customerId));
       notificationService.sendNotificationToTarget(notification);
+    }
+  }
 
-      // find next 2 customers in queue
-      Long queueId = queueTicket.getQueueId();
-      Optional<QueueList> queueOp =
-          queueList.stream().filter(queue -> queueId == queue.getQueueId()).findFirst();
+  private void notifyNextCustomer(long queueId) {
+    // find next customers in queue
+    Optional<QueueList> queueOp =
+        queueList.stream().filter(queue -> queueId == queue.getQueueId()).findFirst();
 
-      if (queueOp.isPresent()) {
-        LinkedList<QueueTicket> queueTickets = queueOp.get().getQueueTickets();
-        // only send notification if queue.size > 1
-        if (queueTickets.size() > 1) {
-          List<QueueTicket> topTwoTickets =
-              queueTickets.stream()
-                  .filter(t -> t.getTicketId() != ticketId)
-                  .limit(3)
-                  .collect(Collectors.toList());
-
-          topTwoTickets.forEach(
-              nextTicket -> {
-                Long customerId1 = nextTicket.getCustomerId();
-                // notify
-                DirectNotification nextNotification = new DirectNotification();
-                nextNotification.setMessage("You are next!");
-                nextNotification.setTitle("title");
-                try {
-                  nextNotification.setTarget(notificationService.getTokenByUserId(customerId));
-                } catch (Exception e) {
-                  e.printStackTrace();
-                }
-                notificationService.sendNotificationToTarget(nextNotification);
-              });
+    if (queueOp.isPresent()) {
+      LinkedList<QueueTicket> queueTickets = queueOp.get().getQueueTickets();
+      // only send notification if queue.size > 0
+      if (queueTickets.size() > 0) {
+        QueueTicket nextTicket = queueTickets.get(0);
+        Long nextCustomerId = nextTicket.getCustomerId();
+        // notify
+        DirectNotification nextNotification = new DirectNotification();
+        nextNotification.setMessage("You are next!");
+        nextNotification.setTitle("title");
+        try {
+          nextNotification.setTarget(notificationService.getTokenByUserId(nextCustomerId));
+        } catch (Exception e) {
+          e.printStackTrace();
         }
+        notificationService.sendNotificationToTarget(nextNotification);
       }
     }
   }
