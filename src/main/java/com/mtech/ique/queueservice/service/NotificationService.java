@@ -32,7 +32,9 @@ public class NotificationService {
 
       String strJsonBody =
           "{"
-              + "\"app_id\": \"APP_ID\","
+              + "\"app_id\": \""
+              + APP_ID
+              + "\","
               + "\"include_player_ids\": [\""
               + playerId
               + "\"],"
