@@ -23,10 +23,9 @@ public class FirebaseInitialize {
           FirebaseOptions.builder()
               .setCredentials(GoogleCredentials.fromStream(serviceAccount))
               .build();
-      if (FirebaseApp.getApps().isEmpty()) {
-        FirebaseApp.initializeApp(options);
-        logger.info("Firebase application has been initialized");
-      }
+      FirebaseApp.initializeApp(options);
+      logger.info("Firebase application has been initialized");
+
     } catch (IOException e) {
       logger.error(e.getMessage());
     }
