@@ -4,7 +4,6 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.WriteResult;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.firebase.messaging.*;
 import com.mtech.ique.queueservice.model.DirectNotification;
@@ -16,13 +15,11 @@ import org.springframework.stereotype.Service;
 public class FCMServiceImpl implements FCMService {
   @Override
   public void sedNotificationToTarget(DirectNotification notification) {
-
     WebpushNotification push =
         WebpushNotification.builder()
             .setTitle(notification.getTitle())
             .setBody(notification.getMessage())
             .setIcon("https://ique.vercel.app/favicon-32x32.png")
-            //            .setImage("https://ique.vercel.app/demo/photo.48.jpeg")
             .build();
 
     WebpushConfig webpushConfig = WebpushConfig.builder().setNotification(push).build();
@@ -37,7 +34,7 @@ public class FCMServiceImpl implements FCMService {
       String response = FirebaseMessaging.getInstance().send(message);
       System.out.println("response = " + response);
     } catch (FirebaseMessagingException e) {
-      e.printStackTrace();
+      throw new RuntimeException(e);
     }
   }
 
@@ -66,10 +63,7 @@ public class FCMServiceImpl implements FCMService {
   @Override
   public void registerToken(Long userId, String token) {
     Firestore dbFirestore = FirestoreClient.getFirestore();
-
     UserToken userToken = UserToken.builder().token(token).userId(userId).build();
-
-    ApiFuture<WriteResult> collectionApiFuture =
-        dbFirestore.collection("userTokens").document(userId.toString()).set(userToken);
+    dbFirestore.collection("userTokens").document(userId.toString()).set(userToken);
   }
 }
