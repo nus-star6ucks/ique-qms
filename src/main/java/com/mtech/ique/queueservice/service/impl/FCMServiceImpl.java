@@ -9,33 +9,41 @@ import com.google.firebase.messaging.*;
 import com.mtech.ique.queueservice.model.DirectNotification;
 import com.mtech.ique.queueservice.model.entity.UserToken;
 import com.mtech.ique.queueservice.service.FCMService;
+import com.mtech.ique.queueservice.service.NotificationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class FCMServiceImpl implements FCMService {
+
+  @Autowired NotificationService notificationService;
+
   @Override
   public void sedNotificationToTarget(DirectNotification notification) {
-    WebpushNotification push =
-        WebpushNotification.builder()
-            .setTitle(notification.getTitle())
-            .setBody(notification.getMessage())
-            .setIcon("https://ique.vercel.app/favicon-32x32.png")
-            .build();
 
-    WebpushConfig webpushConfig = WebpushConfig.builder().setNotification(push).build();
+    notificationService.sendPush(notification.getTarget());
 
-    Message message =
-        Message.builder()
-            .setWebpushConfig(webpushConfig)
-            .setToken(notification.getTarget())
-            .build();
-
-    try {
-      String response = FirebaseMessaging.getInstance().send(message);
-      System.out.println("response = " + response);
-    } catch (FirebaseMessagingException e) {
-      throw new RuntimeException(e);
-    }
+    //    WebpushNotification push =
+    //        WebpushNotification.builder()
+    //            .setTitle(notification.getTitle())
+    //            .setBody(notification.getMessage())
+    //            .setIcon("https://ique.vercel.app/favicon-32x32.png")
+    //            .build();
+    //
+    //    WebpushConfig webpushConfig = WebpushConfig.builder().setNotification(push).build();
+    //
+    //    Message message =
+    //        Message.builder()
+    //            .setWebpushConfig(webpushConfig)
+    //            .setToken(notification.getTarget())
+    //            .build();
+    //
+    //    try {
+    //      String response = FirebaseMessaging.getInstance().send(message);
+    //      System.out.println("response = " + response);
+    //    } catch (FirebaseMessagingException e) {
+    //      throw new RuntimeException(e);
+    //    }
   }
 
   public String getTokenByUserId(Long userId) {
