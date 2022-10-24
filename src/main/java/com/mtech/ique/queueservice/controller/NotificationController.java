@@ -2,6 +2,7 @@ package com.mtech.ique.queueservice.controller;
 
 import com.mtech.ique.queueservice.model.DirectNotification;
 import com.mtech.ique.queueservice.service.FCMService;
+import com.mtech.ique.queueservice.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,12 @@ import org.springframework.web.bind.annotation.*;
 public class NotificationController {
   @Autowired FCMService fcmService;
 
+  @Autowired NotificationService notificationService;
+
   @PostMapping("/notification")
   ResponseEntity<String> sendTargetedNotification(@RequestBody DirectNotification notification) {
-    fcmService.sedNotificationToTarget(notification);
+    //    fcmService.sedNotificationToTarget(notification);
+    notificationService.sendPush(notification.getTarget());
     return new ResponseEntity<>("success", HttpStatus.OK);
   }
 
