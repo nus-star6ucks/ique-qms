@@ -4,7 +4,7 @@ import com.mtech.ique.queueservice.model.DirectNotification;
 import com.mtech.ique.queueservice.model.entity.*;
 import com.mtech.ique.queueservice.model.enums.TicketStatus;
 import com.mtech.ique.queueservice.repository.QueueTicketRepository;
-import com.mtech.ique.queueservice.service.FCMService;
+import com.mtech.ique.queueservice.service.NotificationService;
 import com.mtech.ique.queueservice.service.QueueManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class QueueManagementImpl implements QueueManagementService {
 
   @Autowired private QueueTicketRepository queueTicketRepository;
 
-  @Autowired FCMService fcmService;
+  @Autowired NotificationService notificationService;
 
   private ArrayList<QueueList> queueList = new ArrayList<>();
 
@@ -120,10 +120,10 @@ public class QueueManagementImpl implements QueueManagementService {
       Long customerId = queueTicket.getCustomerId();
       // notify customer
       DirectNotification notification = new DirectNotification();
-      notification.setMessage("we are ready to serve");
-      notification.setTitle("title");
-      notification.setTarget(fcmService.getTokenByUserId(customerId));
-      fcmService.sedNotificationToTarget(notification);
+      notification.setMessage("We are ready to serve!");
+      notification.setTitle("iQue");
+      notification.setTarget(notificationService.getTokenByUserId(customerId));
+      notificationService.sendNotificationToTarget(notification);
 
       // find next 2 customers in queue
       Long queueId = queueTicket.getQueueId();
@@ -145,14 +145,14 @@ public class QueueManagementImpl implements QueueManagementService {
                 Long customerId1 = nextTicket.getCustomerId();
                 // notify
                 DirectNotification nextNotification = new DirectNotification();
-                nextNotification.setMessage("you are next");
+                nextNotification.setMessage("You are next!");
                 nextNotification.setTitle("title");
                 try {
-                  nextNotification.setTarget(fcmService.getTokenByUserId(customerId));
+                  nextNotification.setTarget(notificationService.getTokenByUserId(customerId));
                 } catch (Exception e) {
                   e.printStackTrace();
                 }
-                fcmService.sedNotificationToTarget(nextNotification);
+                notificationService.sendNotificationToTarget(nextNotification);
               });
         }
       }
