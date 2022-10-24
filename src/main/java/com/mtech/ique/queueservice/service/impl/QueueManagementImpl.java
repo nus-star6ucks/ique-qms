@@ -170,7 +170,7 @@ public class QueueManagementImpl implements QueueManagementService {
       queue.setQueueId(queueId);
       SeatType seatType = new SeatType();
       long seatTypeId = Long.valueOf(String.valueOf(hashMapMap.get("id")));
-      seatType.setId(seatTypeId);
+      seatType.setSeatTypeId(seatTypeId);
       seatType.setName(String.valueOf(hashMapMap.get("name")));
       queue.setSeatType(seatType);
       queueList.add(queue);
@@ -236,7 +236,7 @@ public class QueueManagementImpl implements QueueManagementService {
 
   private List<QueueTicket> getQueueTicketsOfToday(List<QueueTicket> queueTickets) {
     return queueTickets.stream()
-        .filter(t -> t.getStartTime() <= getTimestampOfTodayMiddleNight())
+        .filter(t -> t.getStartTime() >= getTimestampOfTodayMiddleNight())
         .collect(Collectors.toList());
   }
 
