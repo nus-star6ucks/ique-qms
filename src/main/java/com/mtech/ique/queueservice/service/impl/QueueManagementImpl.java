@@ -86,11 +86,12 @@ public class QueueManagementImpl implements QueueManagementService {
     else {
       for (QueueList queue : queueList){
         if (queueTicket.getQueueId().equals(queue.getQueueId())) {
+          long waitingSize = queue.getWaitingSize() == 0 ? 0 : (queueTicket.getQueueNumber() - queue.getQueueTickets().getFirst().getQueueNumber() + 1);
           QueueInfo tempQueueInfo =
                   new QueueInfo(
                           queue.getQueueId(),
-                          queue.getWaitingSize(),
-                          queue.getEstimateWaitingTime(),
+                          waitingSize,
+                          waitingSize * 5,
                           queueTicket.getSeatType());
           queueInfo.put("queueInfo", tempQueueInfo);
           break;
