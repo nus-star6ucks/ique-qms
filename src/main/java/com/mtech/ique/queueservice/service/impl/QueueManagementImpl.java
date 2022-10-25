@@ -204,7 +204,7 @@ public class QueueManagementImpl implements QueueManagementService {
 
   @Override
   public QueueInfo getQueueInfoDetail(Long queueId) {
-    SeatType seatType = new SeatType();
+    SeatType seatType = new SeatType(0L, "default");
     QueueInfo queueInfo = new QueueInfo(queueId, 0, 0, seatType);
 
     for (QueueList queue : queueList) {
