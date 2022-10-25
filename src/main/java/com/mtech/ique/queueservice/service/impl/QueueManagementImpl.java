@@ -65,28 +65,38 @@ public class QueueManagementImpl implements QueueManagementService {
   @Override
   public HashMap<String, Object> getQueueTicketDetail(Long ticketId) {
     HashMap<String, Object> queueInfo = new HashMap<>();
-    for (QueueList queue : queueList) {
-      for (QueueTicket queueTicket : queue.getQueueTickets()) {
-        if (queueTicket.getTicketId().equals(ticketId)) {
-          queueInfo.put("id", ticketId);
-          queueInfo.put("storeId", queueTicket.getStoreId());
-          queueInfo.put("customerId", queueTicket.getCustomerId());
-          queueInfo.put("queueNumber", queueTicket.getQueueNumber());
-          queueInfo.put("startTime", queueTicket.getStartTime());
-          queueInfo.put("endTime", queueTicket.getEndTime());
-          queueInfo.put("status", queueTicket.getStatus());
-          QueueInfo tempQueueInfo =
+    QueueTicket queueTicket = queueTicketRepository.findById(ticketId).get();
+
+    queueInfo.put("id", ticketId);
+    queueInfo.put("storeId", queueTicket.getStoreId());
+    queueInfo.put("customerId", queueTicket.getCustomerId());
+    queueInfo.put("queueNumber", queueTicket.getQueueNumber());
+    queueInfo.put("startTime", queueTicket.getStartTime());
+    queueInfo.put("endTime", queueTicket.getEndTime());
+    queueInfo.put("status", queueTicket.getStatus());
+
+    if (queueList.size()==0){
+      QueueInfo tempQueueInfo =
               new QueueInfo(
-                  queue.getQueueId(),
-                  queue.getWaitingSize(),
-                  queue.getEstimateWaitingTime(),
-                  queueTicket.getSeatType());
+                      0,0,0,
+                      queueTicket.getSeatType());
+      queueInfo.put("queueInfo", tempQueueInfo);
+    }
+
+    else {
+      for (QueueList queue : queueList){
+        if (queueTicket.getQueueId().equals(queue.getQueueId())) {
+          QueueInfo tempQueueInfo =
+                  new QueueInfo(
+                          queue.getQueueId(),
+                          queue.getWaitingSize(),
+                          queue.getEstimateWaitingTime(),
+                          queueTicket.getSeatType());
           queueInfo.put("queueInfo", tempQueueInfo);
-          return queueInfo;
+          break;
         }
       }
     }
-
     return queueInfo;
   }
 
