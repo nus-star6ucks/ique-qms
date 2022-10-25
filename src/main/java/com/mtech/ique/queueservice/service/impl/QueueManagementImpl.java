@@ -75,16 +75,11 @@ public class QueueManagementImpl implements QueueManagementService {
     queueInfo.put("endTime", queueTicket.getEndTime());
     queueInfo.put("status", queueTicket.getStatus());
 
-    if (queueList.size()==0){
-      QueueInfo tempQueueInfo =
-              new QueueInfo(
-                      0,0,0,
-                      queueTicket.getSeatType());
+    if (queueList.size() == 0) {
+      QueueInfo tempQueueInfo = new QueueInfo(0, 0, 0, queueTicket.getSeatType());
       queueInfo.put("queueInfo", tempQueueInfo);
-    }
-
-    else {
-      for (QueueList queue : queueList){
+    } else {
+      for (QueueList queue : queueList) {
         if (queueTicket.getQueueId().equals(queue.getQueueId())) {
           long waitingSize = queue.getWaitingSize() == 0 ? 0 : (queueTicket.getQueueNumber() - queue.getQueueTickets().getFirst().getQueueNumber() + 1);
           QueueInfo tempQueueInfo =
@@ -181,7 +176,7 @@ public class QueueManagementImpl implements QueueManagementService {
       queue.setQueueId(queueId);
       SeatType seatType = new SeatType();
       long seatTypeId = Long.valueOf(String.valueOf(hashMapMap.get("id")));
-      seatType.setSeatTypeId(seatTypeId);
+      seatType.setId(seatTypeId);
       seatType.setName(String.valueOf(hashMapMap.get("name")));
       queue.setSeatType(seatType);
       queueList.add(queue);
@@ -210,8 +205,9 @@ public class QueueManagementImpl implements QueueManagementService {
 
   @Override
   public QueueInfo getQueueInfoDetail(Long queueId) {
-    QueueInfo queueInfo = new QueueInfo();
-    queueInfo.setQueueId(0);
+    SeatType seatType = new SeatType(0L, "default");
+    QueueInfo queueInfo = new QueueInfo(queueId, 0, 0, seatType);
+
     for (QueueList queue : queueList) {
       if (queue.getQueueId() == queueId) {
         queueInfo.setQueueId(queueId);
@@ -220,6 +216,14 @@ public class QueueManagementImpl implements QueueManagementService {
         queueInfo.setWaitingSize(queue.getWaitingSize());
         return queueInfo;
       }
+    }
+
+    // if queueId not in queueList, search it in database
+    List<QueueTicket> ticketsInQueue = queueTicketRepository.findAllByQueueId(queueId);
+    System.out.println("ticketsInQueue = " + ticketsInQueue);
+    if (ticketsInQueue.size() > 0) {
+      seatType = ticketsInQueue.get(0).getSeatType();
+      queueInfo.setSeatType(seatType);
     }
     return queueInfo;
   }

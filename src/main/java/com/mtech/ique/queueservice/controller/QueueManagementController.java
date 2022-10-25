@@ -72,9 +72,6 @@ public class QueueManagementController {
   @GetMapping("/{queueId}")
   public ResponseEntity<Object> getQueueInfoDetail(@PathVariable Long queueId) {
     QueueInfo queueInfo = queueManagementService.getQueueInfoDetail(queueId);
-    if (queueInfo.getQueueId() == 0) {
-      return new ResponseEntity<>("Recode not found", HttpStatus.NOT_FOUND);
-    }
     return new ResponseEntity<>(queueInfo, HttpStatus.OK);
   }
 
