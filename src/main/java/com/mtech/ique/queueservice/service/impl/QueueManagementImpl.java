@@ -4,7 +4,7 @@ import com.mtech.ique.queueservice.model.DirectNotification;
 import com.mtech.ique.queueservice.model.entity.*;
 import com.mtech.ique.queueservice.model.enums.TicketStatus;
 import com.mtech.ique.queueservice.repository.QueueTicketRepository;
-import com.mtech.ique.queueservice.service.FCMService;
+import com.mtech.ique.queueservice.service.NotificationService;
 import com.mtech.ique.queueservice.service.QueueManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class QueueManagementImpl implements QueueManagementService {
 
   @Autowired private QueueTicketRepository queueTicketRepository;
 
-  @Autowired FCMService fcmService;
+  @Autowired NotificationService notificationService;
 
   private ArrayList<QueueList> queueList = new ArrayList<>();
 
@@ -101,28 +101,33 @@ public class QueueManagementImpl implements QueueManagementService {
   }
 
   @Override
-  public boolean checkIn(Long ticketId) {
-
+  public String checkIn(Long ticketId) {
     for (QueueList queue : queueList) {
-      LinkedList<QueueTicket> queueListList = queue.getQueueTickets();
+      LinkedList<QueueTicket> queueTicketList = queue.getQueueTickets();
       for (QueueTicket queueTicket : queue.getQueueTickets()) {
         if (queueTicket.getTicketId().equals(ticketId)) {
-          queueListList.poll();
+          // update queue
+          queueTicketList.poll();
           queue.setWaitingSize(queue.getWaitingSize() - 1);
           queue.setEstimateWaitingTime(queue.getWaitingSize() * 5);
+          queue.setQueueTickets(queueTicketList);
+
+          // update ticket info
           queueTicket.setStatus(TicketStatus.SEATED.toString());
-          queue.setQueueTickets(queueListList);
           // update database
           queueTicketRepository.save(queueTicket);
-          return true;
+
+          // notify next customer in queue
+          Long queueId = queueTicket.getQueueId();
+          return notifyNextCustomer(queueId);
         }
       }
     }
-    return false;
+    return null;
   }
 
   @Override
-  public void call(Long ticketId) throws ExecutionException, InterruptedException {
+  public String call(Long ticketId) throws ExecutionException, InterruptedException {
     // find customer by ticketId
     Optional<QueueTicket> queueTicketOp = queueTicketRepository.findById(ticketId);
     if (queueTicketOp.isPresent()) {
@@ -130,43 +135,38 @@ public class QueueManagementImpl implements QueueManagementService {
       Long customerId = queueTicket.getCustomerId();
       // notify customer
       DirectNotification notification = new DirectNotification();
-      notification.setMessage("we are ready to serve");
-      notification.setTitle("title");
-      notification.setTarget(fcmService.getTokenByUserId(customerId));
-      fcmService.sedNotificationToTarget(notification);
+      notification.setMessage("We are ready to serve!");
+      notification.setTitle("iQue");
+      notification.setTarget(notificationService.getTokenByUserId(customerId));
+      return notificationService.sendNotificationToTarget(notification);
+    }
+    return null;
+  }
 
-      // find next 2 customers in queue
-      Long queueId = queueTicket.getQueueId();
-      Optional<QueueList> queueOp =
-          queueList.stream().filter(queue -> queueId == queue.getQueueId()).findFirst();
+  private String notifyNextCustomer(long queueId) {
+    // find next customers in queue
+    Optional<QueueList> queueOp =
+        queueList.stream().filter(queue -> queueId == queue.getQueueId()).findFirst();
 
-      if (queueOp.isPresent()) {
-        LinkedList<QueueTicket> queueTickets = queueOp.get().getQueueTickets();
-        // only send notification if queue.size > 1
-        if (queueTickets.size() > 1) {
-          List<QueueTicket> topTwoTickets =
-              queueTickets.stream()
-                  .filter(t -> t.getTicketId() != ticketId)
-                  .limit(3)
-                  .collect(Collectors.toList());
-
-          topTwoTickets.forEach(
-              nextTicket -> {
-                Long customerId1 = nextTicket.getCustomerId();
-                // notify
-                DirectNotification nextNotification = new DirectNotification();
-                nextNotification.setMessage("you are next");
-                nextNotification.setTitle("title");
-                try {
-                  nextNotification.setTarget(fcmService.getTokenByUserId(customerId));
-                } catch (Exception e) {
-                  e.printStackTrace();
-                }
-                fcmService.sedNotificationToTarget(nextNotification);
-              });
+    if (queueOp.isPresent()) {
+      LinkedList<QueueTicket> queueTickets = queueOp.get().getQueueTickets();
+      // only send notification if queue.size > 0
+      if (queueTickets.size() > 0) {
+        QueueTicket nextTicket = queueTickets.get(0);
+        Long nextCustomerId = nextTicket.getCustomerId();
+        // notify
+        DirectNotification nextNotification = new DirectNotification();
+        nextNotification.setMessage("You are next!");
+        nextNotification.setTitle("title");
+        try {
+          nextNotification.setTarget(notificationService.getTokenByUserId(nextCustomerId));
+        } catch (Exception e) {
+          e.printStackTrace();
         }
+        return notificationService.sendNotificationToTarget(nextNotification);
       }
     }
+    return null;
   }
 
   @Override
@@ -180,7 +180,7 @@ public class QueueManagementImpl implements QueueManagementService {
       queue.setQueueId(queueId);
       SeatType seatType = new SeatType();
       long seatTypeId = Long.valueOf(String.valueOf(hashMapMap.get("id")));
-      seatType.setId(seatTypeId);
+      seatType.setSeatTypeId(seatTypeId);
       seatType.setName(String.valueOf(hashMapMap.get("name")));
       queue.setSeatType(seatType);
       queueList.add(queue);
@@ -226,33 +226,41 @@ public class QueueManagementImpl implements QueueManagementService {
   @Override
   public List<QueueTicket> getQueueTicketsByUser(Long userId) {
     List<QueueTicket> queueTickets = queueTicketRepository.findAllByCustomerId(userId);
-    List<QueueTicket> queueTicketsFinal = new ArrayList<>();
-    for (QueueTicket queueTicket : queueTickets) {
-      if (queueTicket.getStatus().equals(TicketStatus.PENDING.toString())) {
-        queueTicketsFinal.add(queueTicket);
-      }
-    }
-    return queueTicketsFinal;
+    return getQueueTicketsOfToday(queueTickets);
+  }
+
+  private Long getTimestampOfTodayMiddleNight() {
+    Calendar day = Calendar.getInstance();
+    day.set(Calendar.MILLISECOND, 0);
+    day.set(Calendar.SECOND, 0);
+    day.set(Calendar.MINUTE, 0);
+    day.set(Calendar.HOUR_OF_DAY, 0);
+    return day.getTimeInMillis();
   }
 
   @Override
   public List<QueueTicket> getQueueTicketsByStore(Long storeId) {
     List<QueueTicket> queueTickets = queueTicketRepository.findAllByStoreId(storeId);
-    List<QueueTicket> queueTicketsFinal = new ArrayList<>();
-    for (QueueTicket queueTicket : queueTickets) {
-      if (queueTicket.getStatus().equals(TicketStatus.PENDING.toString())) {
-        queueTicketsFinal.add(queueTicket);
-      }
-    }
-    return queueTicketsFinal;
+    return getQueueTicketsOfToday(queueTickets);
+  }
+
+  private List<QueueTicket> getQueueTicketsOfToday(List<QueueTicket> queueTickets) {
+    return queueTickets.stream()
+        .filter(t -> t.getStartTime() >= getTimestampOfTodayMiddleNight())
+        .collect(Collectors.toList());
   }
 
   @Override
-  public void skipCustomer(Long ticketId) {
-    checkIn(ticketId);
-    QueueTicket queueTicket = queueTicketRepository.findById(ticketId).get();
-    queueTicket.setStatus(TicketStatus.SKIPPED.toString());
-    queueTicketRepository.save(queueTicket);
+  public String skipCustomer(Long ticketId) {
+    String checkInResult = checkIn(ticketId);
+    if (checkInResult != null) {
+
+      QueueTicket queueTicket = queueTicketRepository.findById(ticketId).get();
+      queueTicket.setStatus(TicketStatus.SKIPPED.toString());
+      queueTicketRepository.save(queueTicket);
+      return checkInResult;
+    }
+    return null;
   }
 
   @Override

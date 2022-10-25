@@ -2,7 +2,6 @@ package com.mtech.ique.queueservice.service;
 
 import com.mtech.ique.queueservice.model.entity.QueueInfo;
 import com.mtech.ique.queueservice.model.entity.QueueTicket;
-import com.mtech.ique.queueservice.model.entity.User;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,9 +13,9 @@ public interface QueueManagementService {
 
   HashMap<String, Object> getQueueTicketDetail(Long ticketId);
 
-  boolean checkIn(Long ticketId);
+  String checkIn(Long ticketId);
 
-  void call(Long ticketId) throws ExecutionException, InterruptedException;
+  String call(Long ticketId) throws ExecutionException, InterruptedException;
 
   List<HashMap<String, Object>> createQueues(List<HashMap<String, Object>> seatTypeList);
 
@@ -28,7 +27,7 @@ public interface QueueManagementService {
 
   List<QueueTicket> getQueueTicketsByStore(Long storeId);
 
-  void skipCustomer(Long ticketId);
+  String skipCustomer(Long ticketId);
 
   List<QueueTicket> getQueueTicketsByUserAndStore(Long userId, Long storeId);
 }
