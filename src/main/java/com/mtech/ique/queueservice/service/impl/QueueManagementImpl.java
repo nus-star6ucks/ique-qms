@@ -175,7 +175,7 @@ public class QueueManagementImpl implements QueueManagementService {
       queue.setQueueId(queueId);
       SeatType seatType = new SeatType();
       long seatTypeId = Long.valueOf(String.valueOf(hashMapMap.get("id")));
-      seatType.setSeatTypeId(seatTypeId);
+      seatType.setId(seatTypeId);
       seatType.setName(String.valueOf(hashMapMap.get("name")));
       queue.setSeatType(seatType);
       queueList.add(queue);
