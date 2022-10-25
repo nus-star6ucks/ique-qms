@@ -89,8 +89,8 @@ public class QueueManagementImpl implements QueueManagementService {
           QueueInfo tempQueueInfo =
                   new QueueInfo(
                           queue.getQueueId(),
-                          queue.getWaitingSize(),
-                          queue.getEstimateWaitingTime(),
+                          queue.getQueueTickets().indexOf(queueTicket),
+                          queue.getQueueTickets().indexOf(queueTicket) * 5,
                           queueTicket.getSeatType());
           queueInfo.put("queueInfo", tempQueueInfo);
           break;
