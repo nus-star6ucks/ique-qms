@@ -280,4 +280,8 @@ public class QueueManagementImpl implements QueueManagementService {
     }
     return queueTickets;
   }
+
+  public ArrayList<QueueList> getQueueList(){
+    return queueList;
+  }
 }
