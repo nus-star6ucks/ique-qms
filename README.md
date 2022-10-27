@@ -14,21 +14,18 @@
     1. Create a service account
     2. Download the key file
 
-3. Add `_key.json` file to the code repository
-
 4. Create a new file: `application-cloud.properties` in `/src/main/resources `
 
    add config:
 
    ```properties
    spring.cloud.gcp.sql.enabled=true
-   # need to change later
-   spring.cloud.gcp.sql.database-name=connection_test
-   spring.cloud.gcp.sql.instance-connection-name=ique-star6ucks:asia-southeast1:queue-db
-   spring.datasource.username=queue-manager
-   spring.datasource.password=rTJBMdkj6LrCSf0+
+   spring.cloud.gcp.sql.database-name=
+   spring.cloud.gcp.sql.instance-connection-name=
+   spring.datasource.username=
+   spring.datasource.password=
    spring.cloud.gcp.project-id=ique-star6ucks
-   spring.cloud.gcp.credentials.location=file:_key.json
+   spring.cloud.gcp.credentials.location=
    ```
 
 5. Add config to  `application.properties` file
