@@ -15,8 +15,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${MYSQL_URL:jdbc:mysql://localhost/queues-db?createDatabaseIfNotExist=true}
-    username: ${DB_USER:queue-manager}
-    password: ${DB_PASS:rTJBMdkj6LrCSf0+}
+    username: ${DB_USER}
+    password: ${DB_PASS}
     initialization-mode: always
   jpa:
     properties:
