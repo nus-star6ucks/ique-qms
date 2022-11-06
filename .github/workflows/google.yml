@@ -12,7 +12,7 @@ env:
   GKE_CLUSTER: ique-app  
   GKE_ZONE: asia-southeast1-a  
   DEPLOYMENT_NAME: ique-qms
-  REPOSITORY: star6ucks-ique
+  REPOSITORY: ${{ secrets.GKE_PROJECT }}
   IMAGE: ique-qms
 
 jobs:
