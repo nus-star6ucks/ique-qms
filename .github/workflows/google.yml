@@ -49,6 +49,11 @@ jobs:
 
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
+      
+    - name: Retrieve Version
+      run: |
+       echo "::set-output name=VERSION_NAME::$(${{github.workspace}}/gradlew -q printVersionName)"
+      id: jar_version
 
     - name: Execute Gradle Build
       working-directory: ./
@@ -58,7 +63,7 @@ jobs:
       run: |-
         gcloud --quiet auth configure-docker $GAR_LOCATION-docker.pkg.dev
 
-    # debug
+    
     - uses: 'google-github-actions/auth@v0'
       with:
         credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
