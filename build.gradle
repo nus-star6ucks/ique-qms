@@ -39,6 +39,10 @@ dependencyManagement {
     }
 }
 
+task printVersionName {
+  println version
+}
+
 tasks.named('test') {
     useJUnitPlatform()
 }
