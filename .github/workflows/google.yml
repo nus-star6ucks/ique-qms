@@ -7,13 +7,13 @@ on:
     branches: [ "master" ]
 
 env:
-  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
-  GAR_LOCATION: asia-southeast1
-  GKE_CLUSTER: ique-app  
-  GKE_ZONE: asia-southeast1-a  
-  DEPLOYMENT_NAME: ique-qms
-  REPOSITORY: ${{ secrets.GKE_PROJECT }}
-  IMAGE: ique-qms
+  PROJECT_ID: ${{ secrets.PROJECT_ID }}
+  GAR_LOCATION: ${{ secrets.GAR_LOCATION }}
+  GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}  
+  GKE_ZONE: ${{ secrets.GKE_ZONE }}  
+  DEPLOYMENT_NAME: ${{ secrets.DEPLOYMENT_NAME }}
+  REPOSITORY: ${{ secrets.REPOSITORY }}
+  IMAGE: ${{ secrets.IMAGE }}
 
 jobs:
   setup-build-publish-deploy:
@@ -77,7 +77,7 @@ jobs:
           --tag "$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:latest" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
           --build-arg GITHUB_REF="$GITHUB_REF" \
-          --build-arg JAR_FILE=build/libs/\*.jar \
+          --build-arg JAR_FILE=build/libs/qms-${{steps.jar_version.outputs.VERSION_NAME}}.jar.jar \
           .
     # Push the Docker image to Google Artifact Registry
     - name: Publish
@@ -86,4 +86,4 @@ jobs:
         
     - name: Run Cloud Build Trigger
       run: |-
-        gcloud beta builds triggers run ique-qms --branch=main
+        gcloud beta builds triggers run ${{ env.DEPLOYMENT_NAME }} --branch=main
